@@ -1,0 +1,236 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useMutation } from "convex/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { api } from "@/convex/_generated/api";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { useI18n } from "@/lib/i18n";
+import { cn } from "@/lib/utils";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+
+const toOptionalText = (value: unknown) =>
+  typeof value === "string" && value.trim() === "" ? undefined : value;
+
+const toOptionalNumber = (value: unknown) => {
+  if (value === "" || value === null || value === undefined) {
+    return undefined;
+  }
+
+  const numericValue = Number(value);
+  return Number.isNaN(numericValue) ? undefined : numericValue;
+};
+
+export default function CreateCustomerPage() {
+  const { dir, t, language } = useI18n();
+  const isRTL = dir === "rtl";
+  const router = useRouter();
+  const createCustomer = useMutation(api.customers.createCustomer);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const customerSchema = z.object({
+    name: z.string().min(2, t("fieldRequired")),
+    email: z.preprocess(toOptionalText, z.string().email().optional()),
+    phone: z.preprocess(toOptionalText, z.string().optional()),
+    address: z.preprocess(toOptionalText, z.string().optional()),
+    creditLimit: z.preprocess(
+      toOptionalNumber,
+      z.number().nonnegative(t("positiveNumber")).optional(),
+    ),
+  });
+
+  type CustomerFormValues = z.infer<typeof customerSchema>;
+
+  const form = useForm<CustomerFormValues>({
+    resolver: zodResolver(customerSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
+      address: "",
+      creditLimit: undefined,
+    },
+  });
+
+  const onSubmit = async (values: CustomerFormValues) => {
+    setSubmitError(null);
+
+    try {
+      await createCustomer({
+        name: values.name,
+        email: values.email,
+        phone: values.phone,
+        address: values.address,
+        creditLimit: values.creditLimit,
+      });
+      router.push("/customers");
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error ? error.message : "Unable to create customer",
+      );
+    }
+  };
+
+  return (
+    <div dir={dir} className="min-h-screen bg-[var(--color-bg-primary)] py-12">
+      <div className="mx-auto max-w-2xl px-4">
+        <div className="rounded-[var(--radius-md)] bg-[var(--color-bg-surface)] p-8 border border-[var(--color-border)] rounded-[var(--radius-md)]">
+          <Link href="/customers">
+            <Button variant="outline" className="mb-6 flex items-center gap-2">
+              {isRTL ? (
+                <ArrowRight className="h-4 w-4" />
+              ) : (
+                <ArrowLeft className="h-4 w-4" />
+              )}
+              {t("backToCustomers")}
+            </Button>
+          </Link>
+
+          <h1 className="mb-2 text-2xl font-bold">
+            {t("createCustomerTitle")}
+          </h1>
+          <p className="mb-6 text-sm text-[var(--color-text-secondary)]">
+            {t("customerFormTitle")}
+          </p>
+
+          <Form {...form}>
+            <form
+              className="space-y-5"
+              onSubmit={form.handleSubmit(onSubmit)}
+              dir={dir}
+            >
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem className={isRTL ? "text-right" : "text-left"}>
+                    <FormLabel>{t("customerName")}</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder={t("enterName")}
+                        className={isRTL ? "text-right" : "text-left"}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="grid gap-5 md:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem className={isRTL ? "text-right" : "text-left"}>
+                      <FormLabel>{t("email")}</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          type="email"
+                          placeholder="name@example.com"
+                          className="text-left"
+                          dir="ltr"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem className={isRTL ? "text-right" : "text-left"}>
+                      <FormLabel>{t("phone")}</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="0550 00 00 00"
+                          className="text-left"
+                          dir="ltr"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="address"
+                render={({ field }) => (
+                  <FormItem className={isRTL ? "text-right" : "text-left"}>
+                    <FormLabel>{t("address")}</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder={t("address")}
+                        className={isRTL ? "text-right" : "text-left"}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="creditLimit"
+                render={({ field }) => (
+                  <FormItem className={isRTL ? "text-right" : "text-left"}>
+                    <FormLabel>{t("maxCreditLimit")}</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        placeholder="0"
+                        value={field.value ?? ""}
+                        className="text-left"
+                        dir="ltr"
+                        onChange={(event) => {
+                          field.onChange(toOptionalNumber(event.target.value));
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {submitError && (
+                <p className="rounded-md border border-[var(--color-danger-dim)] bg-[var(--color-danger-dim)] px-3 py-2 text-sm text-[var(--color-danger)]">
+                  {submitError}
+                </p>
+              )}
+
+              <Button
+                type="submit"
+                disabled={form.formState.isSubmitting}
+                className="w-full"
+              >
+                {form.formState.isSubmitting ? t("saving") : t("saveCustomer")}
+              </Button>
+            </form>
+          </Form>
+        </div>
+      </div>
+    </div>
+  );
+}
