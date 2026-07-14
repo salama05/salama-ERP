@@ -12,7 +12,8 @@ import { StatusBadge }     from "@/components/ui/status-badge";
 import { ActionsMenu }     from "@/components/ui/actions-menu";
 import { Button }          from "@/components/ui/button";
 import { Plus, Eye, Pencil, Trash2, PhoneCall } from "lucide-react";
-import { formatNumber } from "@/lib/taxCalculator";
+import { formatCurrency, formatNumber } from "@/lib/taxCalculator";
+import { FilterBar } from "@/components/FilterBar";
 
 /* ─── Component ──────────────────────────────────────────────────────────── */
 export function CustomersTable() {

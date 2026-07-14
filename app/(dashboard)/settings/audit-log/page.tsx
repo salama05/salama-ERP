@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import { useQuery, usePaginatedQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { usePermission } from "@/hooks/usePermission";
@@ -9,6 +9,12 @@ import { formatNumber } from "@/lib/taxCalculator";
 import { cn } from "@/lib/utils";
 import { Activity, ShieldAlert, ChevronDown, ChevronUp, Filter, ExternalLink, User, Package, FileText, Settings, RefreshCw } from "lucide-react";
 import Link from "next/link";
+
+function getLocaleForLanguage(lang: string): string {
+  if (lang === "ar") return "ar-DZ";
+  if (lang === "fr") return "fr-DZ";
+  return "en-US";
+}
 
 export default function AuditLogPage() {
   const { t, dir, language } = useI18n();

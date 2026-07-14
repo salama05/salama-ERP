@@ -3,6 +3,7 @@ import { v } from "convex/values";
 import { requirePermission } from "./lib/auth";
 import { logAudit } from "./lib/audit";
 import { getViewerContext } from "./lib/context";
+import { hasPermission } from "../lib/permissions";
 
 export const inviteUser = mutation({
   args: {
@@ -146,9 +147,8 @@ export const listUsers = query({
   args: { showInactive: v.optional(v.boolean()) },
   handler: async (ctx, args) => {
     const viewer = await getViewerContext(ctx);
-    
+
     // Check permission using the viewer's role
-    const { hasPermission } = await import("../lib/permissions");
     if (!hasPermission(viewer.role, undefined, "users.manage")) {
       throw new Error("Forbidden: Missing permission users.manage");
     }

@@ -7,6 +7,7 @@ import { api } from "@/convex/_generated/api";
 import { usePermission } from "@/hooks/usePermission";
 import { useI18n } from "@/lib/i18n";
 import { formatNumber } from "@/lib/taxCalculator";
+import { cn } from "@/lib/utils";
 import { Shield, ShieldAlert, UserCheck, UserX, UserPlus, X, Eye, EyeOff, Settings2, ChevronDown, ChevronUp, Lock } from "lucide-react";
 import { ALL_PERMISSIONS } from "@/lib/permissions";
 
