@@ -376,7 +376,45 @@ type TranslationKey =
   | "lastLogin"
   | "deactivate"
   | "reactivate"
-  | "inviteUser";
+  | "inviteUser"
+  // Public / marketing page
+  | "heroKicker"
+  | "heroTitle"
+  | "heroDesc"
+  | "heroCtaStart"
+  | "heroCtaOpenDashboard"
+  | "featureInventoryTitle"
+  | "featureInventoryDesc"
+  | "featureRevenueTitle"
+  | "featureRevenueDesc"
+  | "featureTrustTitle"
+  | "featureTrustDesc"
+  | "dashboardPreviewKicker"
+  | "dashboardPreviewTitle"
+  | "dashboardPreviewLive"
+  | "dashboardPreviewRtlNote"
+  | "dashboardPreviewRtlSub"
+  | "dashboardPreviewMonthlyRevenue"
+  | "dashboardPreviewOrdersToday"
+  | "dashboardPreviewLowStock"
+  | "dashboardPreviewMargin"
+  // Sign-in page
+  | "signInKicker"
+  | "signInTitle"
+  | "signInDesc"
+  // Sign-up page
+  | "signUpKicker"
+  | "signUpTitle"
+  | "signUpDesc"
+  // Auth layout feature cards
+  | "authFeatureRetailTitle"
+  | "authFeatureRetailDesc"
+  | "authFeatureRtlTitle"
+  | "authFeatureRtlDesc"
+  | "authFeatureMtTitle"
+  | "authFeatureMtDesc"
+  | "authFeatureZeroTitle"
+  | "authFeatureZeroDesc";
 
 type TranslationDictionary = Partial<Record<TranslationKey, string>>;
 
@@ -655,6 +693,44 @@ const translations: Record<Language, TranslationDictionary> = {
     deactivate: "Désactiver",
     reactivate: "Réactiver",
     inviteUser: "Inviter un utilisateur",
+    // Public / marketing
+    heroKicker: "Retail et gros en une seule interface",
+    heroTitle: "Un système d'exploitation plus précis pour les commerçants.",
+    heroDesc: "Gérez produits, factures, clients, fournisseurs, caisse, finance et analytique depuis un espace de travail multi-tenant conçu pour la vitesse, la clarté et le support RTL.",
+    heroCtaStart: "Commencer gratuitement",
+    heroCtaOpenDashboard: "Ouvrir le tableau de bord",
+    featureInventoryTitle: "Inventaire",
+    featureInventoryDesc: "Signaux de stock clairs et contrôle des réapprovisionnements.",
+    featureRevenueTitle: "Revenus",
+    featureRevenueDesc: "Visibilité en temps réel des ventes et des marges.",
+    featureTrustTitle: "Sécurité",
+    featureTrustDesc: "Contrôles de rôle et séparation des locataires.",
+    dashboardPreviewKicker: "Aperçu opérationnel",
+    dashboardPreviewTitle: "Salama Control Center",
+    dashboardPreviewLive: "En direct",
+    dashboardPreviewRtlNote: "Conçu pour RTL, FR et EN dès le premier jour.",
+    dashboardPreviewRtlSub: "Gardez le code simple, les interfaces claires et les flux de travail évidents.",
+    dashboardPreviewMonthlyRevenue: "Revenu mensuel",
+    dashboardPreviewOrdersToday: "Commandes aujourd'hui",
+    dashboardPreviewLowStock: "Articles en stock faible",
+    dashboardPreviewMargin: "Marge",
+    // Sign-in
+    signInKicker: "Bon retour",
+    signInTitle: "Connexion à Salama ERP",
+    signInDesc: "Accédez à votre tableau de bord, vos opérations et votre espace analytique.",
+    // Sign-up
+    signUpKicker: "Créer un compte",
+    signUpTitle: "Démarrer avec Salama ERP",
+    signUpDesc: "Configurez votre espace commerçant en quelques minutes.",
+    // Auth layout feature cards
+    authFeatureRetailTitle: "Retail + Gros",
+    authFeatureRetailDesc: "Deux modes commerciaux, une seule interface.",
+    authFeatureRtlTitle: "Prêt pour le RTL",
+    authFeatureRtlDesc: "Mises en page arabes et navigation localisée.",
+    authFeatureMtTitle: "Multi-locataire",
+    authFeatureMtDesc: "Séparation claire avec accès basé sur les rôles.",
+    authFeatureZeroTitle: "Zéro friction",
+    authFeatureZeroDesc: "Flux simples pour un opérateur solo.",
   },
   ar: {
     dashboard: "لوحة التحكم",
@@ -930,6 +1006,44 @@ const translations: Record<Language, TranslationDictionary> = {
     deactivate: "تعطيل",
     reactivate: "تنشيط",
     inviteUser: "دعوة مستخدم",
+    // Public / marketing
+    heroKicker: "تجزئة وجملة في مكان واحد",
+    heroTitle: "نظام تشغيل أكثر حدة للتجار.",
+    heroDesc: "أدر المنتجات والفواتير والزبائن والموردين والمبيعات والمالية والتحليلات من مساحة عمل متعددة المستأجرين مبنية للسرعة والوضوح ودعم RTL.",
+    heroCtaStart: "ابدأ مجاناً",
+    heroCtaOpenDashboard: "فتح لوحة التحكم",
+    featureInventoryTitle: "المخزون",
+    featureInventoryDesc: "إشارات مخزون واضحة والتحكم في إعادة الطلب.",
+    featureRevenueTitle: "المداخيل",
+    featureRevenueDesc: "رؤية مباشرة للمبيعات والهوامش.",
+    featureTrustTitle: "الأمان",
+    featureTrustDesc: "حماية الأدوار وفصل المستأجرين.",
+    dashboardPreviewKicker: "لقطة تشغيلية",
+    dashboardPreviewTitle: "مركز التحكم Salama",
+    dashboardPreviewLive: "مباشر",
+    dashboardPreviewRtlNote: "مُصمم لـ RTL، FR، وEN منذ البداية.",
+    dashboardPreviewRtlSub: "احتفظ بالكود صغيراً والواجهات هادئة وسير العمل اليومي واضحاً.",
+    dashboardPreviewMonthlyRevenue: "الإيراد الشهري",
+    dashboardPreviewOrdersToday: "الطلبات اليوم",
+    dashboardPreviewLowStock: "منتجات المخزون المنخفض",
+    dashboardPreviewMargin: "الهامش",
+    // Sign-in
+    signInKicker: "مرحباً بعودتك",
+    signInTitle: "تسجيل الدخول إلى Salama ERP",
+    signInDesc: "انتقل إلى لوحة التحكم والعمليات ومساحة التحليلات الخاصة بك.",
+    // Sign-up
+    signUpKicker: "إنشاء حساب",
+    signUpTitle: "ابدأ مع Salama ERP",
+    signUpDesc: "أعدّ مساحة عملك كتاجر في دقائق.",
+    // Auth layout feature cards
+    authFeatureRetailTitle: "تجزئة + جملة",
+    authFeatureRetailDesc: "وضعان تجاريان، واجهة واحدة.",
+    authFeatureRtlTitle: "جاهز للـ RTL",
+    authFeatureRtlDesc: "تخطيطات عربية وتنقل محلي.",
+    authFeatureMtTitle: "متعدد المستأجرين",
+    authFeatureMtDesc: "فصل واضح مع وصول يراعي الأدوار.",
+    authFeatureZeroTitle: "صفر احتكاك",
+    authFeatureZeroDesc: "تدفقات بسيطة لمشغل المتجر الفردي.",
   },
   en: {
     dashboard: "Dashboard",
@@ -1121,6 +1235,44 @@ const translations: Record<Language, TranslationDictionary> = {
     deactivate: "Deactivate",
     reactivate: "Reactivate",
     inviteUser: "Invite user",
+    // Public / marketing
+    heroKicker: "Retail and wholesale in one shell",
+    heroTitle: "A sharper operating system for merchants.",
+    heroDesc: "Run products, invoices, customers, suppliers, POS, finance, and analytics from one polished multi-tenant workspace built for speed, clarity, and RTL support.",
+    heroCtaStart: "Start free",
+    heroCtaOpenDashboard: "Open dashboard",
+    featureInventoryTitle: "Inventory",
+    featureInventoryDesc: "Clear stock signals and reorder control.",
+    featureRevenueTitle: "Revenue",
+    featureRevenueDesc: "Live sales and margin visibility.",
+    featureTrustTitle: "Trust",
+    featureTrustDesc: "Role gates and tenant separation.",
+    dashboardPreviewKicker: "Operations snapshot",
+    dashboardPreviewTitle: "Salama Control Center",
+    dashboardPreviewLive: "Live",
+    dashboardPreviewRtlNote: "Designed for RTL, FR, and EN from day one.",
+    dashboardPreviewRtlSub: "Keep the code small, the surfaces calm, and the daily workflows obvious.",
+    dashboardPreviewMonthlyRevenue: "Monthly revenue",
+    dashboardPreviewOrdersToday: "Orders today",
+    dashboardPreviewLowStock: "Low stock items",
+    dashboardPreviewMargin: "Margin",
+    // Sign-in
+    signInKicker: "Welcome back",
+    signInTitle: "Sign in to Salama ERP",
+    signInDesc: "Continue to your dashboard, operations, and analytics workspace.",
+    // Sign-up
+    signUpKicker: "Create account",
+    signUpTitle: "Start using Salama ERP",
+    signUpDesc: "Set up your merchant workspace in minutes.",
+    // Auth layout feature cards
+    authFeatureRetailTitle: "Retail + wholesale",
+    authFeatureRetailDesc: "Two commercial modes, one interface.",
+    authFeatureRtlTitle: "RTL ready",
+    authFeatureRtlDesc: "Arabic layouts and localized navigation.",
+    authFeatureMtTitle: "Multi-tenant",
+    authFeatureMtDesc: "Clear separation with role-aware access.",
+    authFeatureZeroTitle: "Zero-friction",
+    authFeatureZeroDesc: "Simple flows for a solo operator.",
   },
 };
 
