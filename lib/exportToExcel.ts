@@ -67,8 +67,6 @@ export async function exportToExcelAdvanced(
     };
   }
 ): Promise<void> {
-  const { data: dataRows, columns: colDefs, filename: fname } = options || {};
-  
   // Transform data
   const transformedData = data.map((row) => {
     const newRow: Record<string, any> = {};

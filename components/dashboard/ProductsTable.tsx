@@ -233,8 +233,15 @@ export function ProductsTable() {
           { value: "out_of_stock", label: language === "ar" ? "إنتهى المخزون" : language === "fr" ? "Rupture de stock" : "Out of Stock" },
         ]}
         showAmountRange
-        onFiltersChange={setFilters}
-        dir={dir}
+        onFiltersChange={(newFilters) =>
+          setFilters({
+            dateFrom: newFilters.dateFrom ?? null,
+            dateTo: newFilters.dateTo ?? null,
+            status: newFilters.status ?? null,
+            amountMin: newFilters.minAmount ?? null,
+            amountMax: newFilters.maxAmount ?? null,
+          })
+        }
       />
 
       {/* Table */}

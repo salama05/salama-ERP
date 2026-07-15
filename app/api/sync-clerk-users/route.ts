@@ -14,20 +14,24 @@ export async function GET(request: NextRequest) {
 
     const clerk = await clerkClient();
 
-    // Get all organization memberships
     const memberships = await clerk.organizations.getOrganizationMembershipList({
       organizationId: orgId,
     });
 
     const syncedUsers = [];
+    const skippedMemberships: string[] = [];
 
     for (const membership of memberships.data) {
+      if (!membership.publicUserData?.userId) {
+        console.warn(`Skipping membership ${membership.id}: missing publicUserData`);
+        skippedMemberships.push(membership.id);
+        continue;
+      }
+
       const user = await clerk.users.getUser(membership.publicUserData.userId);
-      
-      // Map Clerk role to app role
+
       const appRole = membership.role === "admin" ? "admin" : "STAFF";
 
-      // Sync to Convex
       const convexUser = await fetchMutation(api.users.syncOrganizationMember, {
         clerkUserId: user.id,
         clerkOrgId: orgId,
@@ -52,6 +56,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       synced: syncedUsers.length,
+      skipped: skippedMemberships.length,
       users: syncedUsers,
     });
   } catch (error) {

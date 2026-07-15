@@ -7,6 +7,8 @@ import { useI18n } from "@/lib/i18n";
 import { Search, Package, Users, FileText, Building2, X } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 
+import { Doc } from "@/convex/_generated/dataModel";
+
 interface SearchResult {
   type: "product" | "customer" | "supplier" | "invoice";
   id: string;
@@ -22,10 +24,10 @@ export function GlobalSearch() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
 
-  const products = useQuery(api.products.list);
-  const customers = useQuery(api.customers.listCustomers);
-  const suppliers = useQuery(api.suppliers.listSuppliers);
-  const invoices = useQuery(api.invoices.list);
+  const products = useQuery(api.products.listProducts, {});
+  const customers = useQuery(api.customers.listCustomers, {});
+  const suppliers = useQuery(api.suppliers.listSuppliers, {});
+  const invoices = useQuery(api.invoices.listInvoices, {});
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -52,7 +54,7 @@ export function GlobalSearch() {
     const newResults: SearchResult[] = [];
 
     // Search products
-    products?.forEach((product) => {
+    products?.forEach((product: Doc<"products">) => {
       if (product.name.toLowerCase().includes(q) || product.sku?.toLowerCase().includes(q)) {
         newResults.push({
           type: "product",
@@ -91,7 +93,7 @@ export function GlobalSearch() {
     });
 
     // Search invoices
-    invoices?.forEach((invoice) => {
+    invoices?.forEach((invoice: Doc<"invoices">) => {
       if (invoice.invoiceNumber.toLowerCase().includes(q)) {
         newResults.push({
           type: "invoice",

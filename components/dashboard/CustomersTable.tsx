@@ -201,8 +201,8 @@ export function CustomersTable() {
           { value: "indebted", label: language === "ar" ? "مديونون" : language === "fr" ? "Débiteurs" : "Debtors" },
           { value: "settled", label: language === "ar" ? "مسددون" : language === "fr" ? "Soldés" : "Settled" },
         ]}
-        onFiltersChange={(newFilters) => setDebtFilter(newFilters.status)}
-        dir={dir}
+        onFiltersChange={(newFilters) => setDebtFilter(newFilters.status ?? null)}
+    
       />
 
       {/* Data Table */}

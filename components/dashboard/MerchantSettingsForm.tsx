@@ -214,26 +214,27 @@ export function MerchantSettingsForm({
 
   // Populate form from server once data is available
   useEffect(() => {
-    if (serverSettings) {
-      form.reset({
-        store_name: serverSettings.store_name,
-        logo: serverSettings.logo ?? "",
-        phone: serverSettings.phone,
-        email: serverSettings.email,
-        nif: serverSettings.nif,
-        rc: serverSettings.rc,
-        nis: serverSettings.nis,
-        n_art: serverSettings.n_art,
-        company_type: serverSettings.company_type,
-        business_activity: serverSettings.business_activity,
-        company_address: serverSettings.company_address,
-        defaultCurrency: serverSettings.defaultCurrency,
-        isMultiCurrencyEnabled: serverSettings.isMultiCurrencyEnabled,
-        defaultTvaRate: serverSettings.defaultTvaRate,
-        invoicePrefix: serverSettings.invoicePrefix,
-      });
-    }
-  }, [serverSettings, form]);
+  if (serverSettings) {
+    form.reset({
+      store_name: serverSettings.store_name,
+      logo: serverSettings.logo ?? "",
+      phone: serverSettings.phone,
+      email: serverSettings.email,
+      nif: serverSettings.nif,
+      rc: serverSettings.rc,
+      nis: serverSettings.nis,
+      n_art: serverSettings.n_art,
+      company_type: serverSettings.company_type as MerchantSettingsFormValues["company_type"],
+      business_activity: serverSettings.business_activity,
+      company_address: serverSettings.company_address,
+      defaultCurrency: serverSettings.defaultCurrency,
+      isMultiCurrencyEnabled: serverSettings.isMultiCurrencyEnabled,
+      defaultTvaRate: serverSettings.defaultTvaRate,
+      invoicePrefix: serverSettings.invoicePrefix,
+    });
+  }
+}, [serverSettings, form]);
+
 
   const logoValue = form.watch("logo");
   const isMultiCurrencyEnabled = form.watch("isMultiCurrencyEnabled");
