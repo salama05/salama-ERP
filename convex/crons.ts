@@ -1,6 +1,6 @@
 /**
  * Convex cron job configuration
- * Schedules periodic backup tasks
+ * Schedules periodic backup tasks and demo data reset.
  */
 
 import { cronJobs } from "convex/server";
@@ -24,14 +24,12 @@ crons.interval(
   {}
 );
 
-// Alternative: Use cron syntax for specific times
-// Uncomment and customize as needed:
-// 
-// crons.cron(
-//   "daily_backup_specific_time",
-//   "0 0 * * *", // Daily at midnight UTC
-//   internal.backup.performDailyBackup,
-//   {}
-// );
+// Reset demo workspace data every hour to keep it fresh for visitors
+crons.interval(
+  "reset_demo_data",
+  { hours: 1 },
+  internal.demo.resetDemoData,
+  {}
+);
 
 export default crons;

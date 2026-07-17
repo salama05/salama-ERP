@@ -28,6 +28,15 @@ export async function getViewerContext(
     };
   }
 
+  // Detect demo user by email and force demo context
+  if (identity.email === "demo@salamaerp.com") {
+    return {
+      orgId: "demo_workspace",
+      userId: identity.tokenIdentifier,
+      role: "demo_user",
+    };
+  }
+
   // Fallback to personal workspace (userId) if no organization is selected
   // or if 'org_id' claim is missing from Clerk JWT template.
   const orgId = identity.orgId || (identity as any).org_id || identity.subject;

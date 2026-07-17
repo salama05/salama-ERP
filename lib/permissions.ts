@@ -60,7 +60,40 @@ export const ROLE_PERMISSIONS: Record<string, Permission[]> = {
     "invoices.create", "invoices.edit", "products.create",
     "customers.*"
   ],
+  // Demo role: read + limited create/edit. No delete, no settings, no finance, no users.
+  demo_user: [
+    "invoices.create", "invoices.edit",
+    "products.create",
+    "inventory.adjustStock",
+    "customers.*",
+    "reports.view",
+  ],
 };
+
+/** The fixed Convex orgId used for all demo sessions. */
+export const DEMO_ORG_ID = "demo_workspace";
+
+/**
+ * Permissions that are completely blocked for demo users regardless of role.
+ * Server-side mutations should call blockIfDemoOrg() before executing.
+ */
+export const DEMO_BLOCKED_PERMISSIONS: Permission[] = [
+  "invoices.void",
+  "invoices.*",
+  "products.*",
+  "products.editPrice",
+  "inventory.*",
+  "users.manage",
+  "finance.manage",
+  "settings.manage",
+  "suppliers.*",
+  "purchases.*",
+];
+
+/** True if the role belongs to a demo session. */
+export function isDemoRole(role: string | undefined): boolean {
+  return role === "demo_user";
+}
 
 export function hasPermission(
   role: string | undefined,

@@ -4,6 +4,7 @@ import { requirePermission } from "./lib/auth";
 import { logAudit } from "./lib/audit";
 import { getViewerContext } from "./lib/context";
 import { hasPermission } from "../lib/permissions";
+import { blockIfDemoOrg } from "./lib/demoGuard";
 
 export const inviteUser = mutation({
   args: {
@@ -22,6 +23,7 @@ export const inviteUser = mutation({
   },
   handler: async (ctx, args) => {
     const { user, orgId } = await requirePermission(ctx, "users.manage");
+    blockIfDemoOrg(orgId, "إضافة مستخدمين غير مسموح في وضع الديمو.");
 
     const normalizedEmail = args.email.toLowerCase().trim();
 

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { OrganizationSwitcher, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
+import { Building2, LogOut, UserRound } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -31,6 +32,10 @@ import {
 import { GlobalSearch } from "@/components/GlobalSearch";
 import { LanguageProvider, useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
+import { DemoBanner } from "@/components/demo/DemoBanner";
+import { useIsDemoMode } from "@/components/providers/convex-client-provider";
+import { useDemoSession } from "@/hooks/useDemoSession";
+import { useAuthSafe } from "@/hooks/useAuthSafe";
 
 const NAV_SECTIONS = [
   {
@@ -82,6 +87,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { language, setLanguage, dir } = useI18n();
+  const isDemoMode = useIsDemoMode();
+  const { exitDemo } = useDemoSession();
   const isRTL = dir === "rtl";
 
   const [theme, setTheme] = useState<"dark" | "light">("dark");
@@ -236,7 +243,20 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
               <span className="font-bold tracking-tight">Salama ERP</span>
             </div>
             <div className="hidden md:block">
-              <OrganizationSwitcher hidePersonal={true} />
+              {isDemoMode ? (
+                <div className="flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-xs font-semibold text-amber-400">
+                  <Building2 className="h-3.5 w-3.5" />
+                  <span>
+                    {language === "ar"
+                      ? "متجر سلامة التجريبي"
+                      : language === "fr"
+                        ? "Boutique démo Salama"
+                        : "Salama demo store"}
+                  </span>
+                </div>
+              ) : (
+                <OrganizationSwitcher hidePersonal={true} />
+              )}
             </div>
           </div>
           
@@ -298,9 +318,50 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
               )}
             </button>
 
-            <UserButton />
+            {isDemoMode ? (
+              <div className="flex items-center gap-2">
+                <div
+                  className="hidden sm:flex items-center gap-2 rounded-full border border-[var(--color-border)] bg-[var(--color-bg-elevated)] px-3 py-1.5 text-xs font-medium text-[var(--color-text-secondary)]"
+                  title={
+                    language === "ar"
+                      ? "زائر تجريبي"
+                      : language === "fr"
+                        ? "Visiteur démo"
+                        : "Demo visitor"
+                  }
+                >
+                  <UserRound className="h-3.5 w-3.5" />
+                  <span>
+                    {language === "ar"
+                      ? "زائر تجريبي"
+                      : language === "fr"
+                        ? "Visiteur démo"
+                        : "Demo visitor"}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={exitDemo}
+                  aria-label={
+                    language === "ar"
+                      ? "إنهاء وضع الديمو"
+                      : language === "fr"
+                        ? "Quitter la démo"
+                        : "Exit demo"
+                  }
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--color-border)] bg-[var(--color-bg-elevated)] text-[var(--color-text-secondary)] transition hover:scale-105 active:scale-95"
+                >
+                  <LogOut className="h-4 w-4" />
+                </button>
+              </div>
+            ) : (
+              <UserButton />
+            )}
           </div>
         </header>
+
+        {/* Demo mode alert banner */}
+        <DemoBanner />
 
         <main className="mx-auto w-full max-w-[1600px] flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
           <div className="animate-fade-up">{children}</div>

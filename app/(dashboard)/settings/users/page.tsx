@@ -5,6 +5,7 @@ import { OrganizationProfile, useAuth } from "@clerk/nextjs";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { usePermission } from "@/hooks/usePermission";
+import { useAuthSafe } from "@/hooks/useAuthSafe";
 import { useI18n } from "@/lib/i18n";
 import { formatNumber } from "@/lib/taxCalculator";
 import { cn } from "@/lib/utils";
@@ -17,7 +18,8 @@ export default function UsersSettingsPage() {
   const [expandedPermissions, setExpandedPermissions] = useState<Set<string>>(new Set());
   const { t, dir, language } = useI18n();
   const isRTL = dir === "rtl";
-  const { orgId } = useAuth();
+  const { orgId } = useAuthSafe();
+  const isDemoMode = orgId === "demo-org-id";
   
   const { hasPermission, isLoading: isPermissionLoading } = usePermission("users.manage");
   const users = useQuery(api.users.listUsers, { showInactive });
@@ -66,6 +68,18 @@ export default function UsersSettingsPage() {
     return <div className="p-8 text-center animate-pulse">Loading...</div>;
   }
 
+  if (isDemoMode) {
+    return (
+      <div className={cn("p-8 max-w-2xl mx-auto text-center space-y-4", isRTL && "text-right")} dir={dir}>
+        <ShieldAlert className="w-12 h-12 text-amber-500 mx-auto" />
+        <h1 className="text-2xl font-bold">{language === "ar" ? "وضع التجريبي" : language === "fr" ? "Mode démo" : "Demo Mode"}</h1>
+        <p className="text-[var(--color-text-secondary)]">
+          {language === "ar" ? "إدارة المستخدمين غير متاحة في وضع التجريبي." : language === "fr" ? "La gestion des utilisateurs n'est pas disponible en mode démo." : "User management is not available in demo mode."}
+        </p>
+      </div>
+    );
+  }
+
   if (!hasPermission) {
     return (
       <div className={cn("p-8 max-w-2xl mx-auto text-center space-y-4", isRTL && "text-right")} dir={dir}>
@@ -101,16 +115,18 @@ export default function UsersSettingsPage() {
               ? (language === "ar" ? "إخفاء غير النشطين" : language === "fr" ? "Masquer inactifs" : "Hide Inactive") 
               : (language === "ar" ? "إظهار غير النشطين" : language === "fr" ? "Afficher inactifs" : "Show Inactive")}
           </button>
-          <button
-            onClick={() => setIsInviteModalOpen(true)}
-            className={cn(
-              "bg-[var(--color-primary)] text-white px-4 py-2 rounded-lg font-medium hover:bg-[var(--color-primary)]/90 transition-colors flex items-center justify-center gap-2",
-              isRTL && "flex-row-reverse"
-            )}
-          >
-            <UserPlus className="w-5 h-5" />
-            {language === "ar" ? "دعوة مستخدمين" : language === "fr" ? "Inviter des utilisateurs" : "Invite Users"}
-          </button>
+          {!isDemoMode && (
+            <button
+              onClick={() => setIsInviteModalOpen(true)}
+              className={cn(
+                "bg-[var(--color-primary)] text-white px-4 py-2 rounded-lg font-medium hover:bg-[var(--color-primary)]/90 transition-colors flex items-center justify-center gap-2",
+                isRTL && "flex-row-reverse"
+              )}
+            >
+              <UserPlus className="w-5 h-5" />
+              {language === "ar" ? "دعوة مستخدمين" : language === "fr" ? "Inviter des utilisateurs" : "Invite Users"}
+            </button>
+          )}
         </div>
       </div>
 

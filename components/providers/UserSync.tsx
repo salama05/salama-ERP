@@ -4,13 +4,20 @@ import { useEffect, useRef } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { useIsDemoMode } from "@/components/providers/convex-client-provider";
 
 export function UserSync() {
+  const isDemoMode = useIsDemoMode();
   const { isSignedIn, isLoaded, orgId, userId } = useAuth();
   const syncUser = useMutation(api.users.syncUser);
   const syncedRef = useRef(false);
 
   useEffect(() => {
+    // Skip sync in demo mode
+    if (isDemoMode) {
+      return;
+    }
+
     // Only run if auth is loaded, user is signed in, and we haven't synced in this session
     if (isLoaded && isSignedIn && !syncedRef.current) {
       syncedRef.current = true;
@@ -23,7 +30,7 @@ export function UserSync() {
     if (isLoaded && !isSignedIn) {
       syncedRef.current = false;
     }
-  }, [isLoaded, isSignedIn, orgId, userId, syncUser]);
+  }, [isLoaded, isSignedIn, orgId, userId, syncUser, isDemoMode]);
 
   return null;
 }

@@ -46,6 +46,7 @@ export default async function RootLayout({
       ? storedLanguage
       : FALLBACK_LANGUAGE;
   const dir = language === "ar" ? "rtl" : "ltr";
+  const isDemoSession = cookieStore.get("demo_session")?.value === "active";
 
   return (
     <html
@@ -57,7 +58,7 @@ export default async function RootLayout({
     >
       {/* Added for Salama ERP specific styling or meta. Not part of the original diff, but good for future customization. */}
       <body className="min-h-full flex flex-col bg-[var(--color-bg-base)] text-[var(--color-text-primary)]">
-        <ConvexClientProvider>{children}</ConvexClientProvider>
+        <ConvexClientProvider initialDemo={isDemoSession}>{children}</ConvexClientProvider>
       </body>
     </html>
   );

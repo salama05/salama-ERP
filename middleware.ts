@@ -1,9 +1,19 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
-const isPublicRoute = createRouteMatcher(["/", "/sign-in(.*)", "/sign-up(.*)"]);
+/** Cookie name that signals an active demo session */
+const DEMO_COOKIE = "demo_session";
 
-// Routes that require OWNER role
+const isPublicRoute = createRouteMatcher([
+  "/",
+  "/sign-in(.*)",
+  "/sign-up(.*)",
+  "/demo",
+  "/api/demo/start",
+  "/api/demo/end",
+]);
+
+// Routes that require OWNER role (blocked for demo users too)
 const ownerOnlyRoutes = createRouteMatcher([
   "/analytics(.*)",
   "/settings(.*)",
@@ -12,39 +22,61 @@ const ownerOnlyRoutes = createRouteMatcher([
 
 export default clerkMiddleware(async (auth, request: NextRequest) => {
   const { pathname } = request.nextUrl;
-  console.log(`[Middleware] Requesting: ${pathname}`);
 
-  const userAuth = await auth();
-  const { userId, orgId } = userAuth;
+  // ─── Demo Session Bypass ──────────────────────────────────────────────────
+  // If the request carries an active demo cookie, skip Clerk auth entirely.
+  // This is Solution B: demo routes are completely outside Clerk's scope.
+  const demoCookie = request.cookies.get(DEMO_COOKIE);
+  const isDemoSession = demoCookie?.value === "active";
 
+  if (isDemoSession) {
+    console.log(`[Middleware] 🎭 Demo session detected for: ${pathname}`);
+    // Block owner-only routes even in demo mode
+    if (ownerOnlyRoutes(request)) {
+      console.log(`[Middleware] 🚫 Demo user blocked from owner route: ${pathname}`);
+      return NextResponse.redirect(new URL("/pos", request.url));
+    }
+    // Allow everything else through — no Clerk check
+    return NextResponse.next();
+  }
+
+  // ─── Normal Clerk Auth ────────────────────────────────────────────────────
   if (!isPublicRoute(request)) {
+    console.log(`[Middleware] Checking private route: ${pathname}`);
+
+    const userAuth = await auth();
+    const { userId, orgId } = userAuth;
+
     if (!userId) {
+      console.log(`[Middleware] ❌ No userId. Redirecting ${pathname} → /sign-in`);
       return NextResponse.redirect(new URL("/sign-in", request.url));
     }
 
-    // Redirect legacy /dashboard path to /overview
+    console.log(`[Middleware] ✅ userId: ${userId}`);
+
+    // Redirect legacy /dashboard path
     if (pathname === "/dashboard") {
       return NextResponse.redirect(new URL("/overview", request.url));
     }
 
-    // Force organization selection for all private routes
     if (!pathname.startsWith("/onboarding") && !orgId) {
-      console.log(`[Middleware] No organization selected for ${pathname}.`);
+      console.log(`[Middleware] ⚠️  No org selected for ${pathname}.`);
     }
 
-    // Check role for protected routes
+    // Check role for owner-only routes
     if (ownerOnlyRoutes(request)) {
-      // Default to OWNER if no role is set (matching useUserRole hook default)
-      const role = (userAuth.sessionClaims?.publicMetadata as { role?: string } | undefined)?.role ?? "OWNER";
-
+      const role =
+        (userAuth.sessionClaims?.publicMetadata as { role?: string } | undefined)
+          ?.role ?? "OWNER";
       if (role !== "OWNER") {
-        console.log(`[Middleware] Access denied for role: ${role}. Redirecting to POS.`);
+        console.log(`[Middleware] 🚫 Role '${role}' denied for ${pathname}. Redirecting → /pos`);
         return NextResponse.redirect(new URL("/pos", request.url));
       }
     }
   } else {
-    // If authenticated user visits home page, redirect to overview
-    if (userId && pathname === "/") {
+    // Authenticated user visiting home page → send to dashboard
+    const userAuth = await auth();
+    if (userAuth.userId && pathname === "/") {
       return NextResponse.redirect(new URL("/overview", request.url));
     }
   }
@@ -52,9 +84,7 @@ export default clerkMiddleware(async (auth, request: NextRequest) => {
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
     "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    // Always run for API routes
     "/(api|trpc)(.*)",
   ],
 };

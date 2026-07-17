@@ -6,7 +6,7 @@ import { PublicShell } from "@/components/ui/PublicShell";
 import { useI18n } from "@/lib/i18n";
 
 function MarketingContent() {
-  const { t, dir } = useI18n();
+  const { t, dir, language } = useI18n();
   const isRTL = dir === "rtl";
 
   const features = [
@@ -69,6 +69,14 @@ function MarketingContent() {
               >
                 {t("heroCtaStart")}
                 <ArrowRight className="h-4 w-4 rtl-flip" />
+              </Link>
+              <Link
+                href="/demo"
+                id="hero-try-demo-btn"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-6 py-3.5 text-sm font-semibold text-amber-400 transition hover:bg-amber-500/20 hover:-translate-y-0.5"
+              >
+                <Sparkles className="h-4 w-4" />
+                {language === "ar" ? "جرّب الديمو" : language === "en" ? "Try Demo" : "Essayer le démo"}
               </Link>
               <Link
                 href="/sign-in"

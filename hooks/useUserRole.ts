@@ -1,10 +1,18 @@
 "use client";
 
 import { useUser } from "@clerk/nextjs";
+import { useIsDemoMode } from "@/components/providers/convex-client-provider";
 
 export type UserRole = "OWNER" | "STAFF";
 
 export function useUserRole(): UserRole | null {
+  const isDemoMode = useIsDemoMode();
+  
+  // In demo mode, default to OWNER role since there's no real auth
+  if (isDemoMode) {
+    return "OWNER";
+  }
+
   const { user, isLoaded } = useUser();
 
   if (!isLoaded || !user) {

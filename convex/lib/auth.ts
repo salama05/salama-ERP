@@ -14,6 +14,27 @@ export async function requirePermission(
     throw new Error("Unauthenticated");
   }
 
+  if (identity.email === "demo@salamaerp.com") {
+    // Check permissions for demo user
+    const granted = hasPermission("demo_user", [], permission);
+    if (!granted) {
+      throw new Error(`Forbidden: Missing permission ${permission}`);
+    }
+    return {
+      user: {
+        _id: "demo_user_id" as any,
+        _creationTime: 0,
+        tokenIdentifier: identity.tokenIdentifier,
+        orgIds: ["demo_workspace"],
+        name: "زائر تجريبي",
+        email: "demo@salamaerp.com",
+        role: "demo_user",
+        isActive: true,
+      },
+      orgId: "demo_workspace",
+    };
+  }
+
   const user = await ctx.db
     .query("users")
     .withIndex("by_token", (q) => q.eq("tokenIdentifier", identity.tokenIdentifier))
@@ -52,6 +73,27 @@ export async function requireAnyPermission(
     throw new Error("Unauthenticated");
   }
 
+  if (identity.email === "demo@salamaerp.com") {
+    // Check permissions for demo user
+    const granted = permissions.some((p) => hasPermission("demo_user", [], p));
+    if (!granted) {
+      throw new Error(`Forbidden: Missing any of permissions ${permissions.join(", ")}`);
+    }
+    return {
+      user: {
+        _id: "demo_user_id" as any,
+        _creationTime: 0,
+        tokenIdentifier: identity.tokenIdentifier,
+        orgIds: ["demo_workspace"],
+        name: "زائر تجريبي",
+        email: "demo@salamaerp.com",
+        role: "demo_user",
+        isActive: true,
+      },
+      orgId: "demo_workspace",
+    };
+  }
+
   const user = await ctx.db
     .query("users")
     .withIndex("by_token", (q) => q.eq("tokenIdentifier", identity.tokenIdentifier))
@@ -83,6 +125,19 @@ export async function requireUser(ctx: QueryCtx | MutationCtx) {
   const identity = await ctx.auth.getUserIdentity();
   if (!identity) {
     throw new Error("Unauthenticated");
+  }
+
+  if (identity.email === "demo@salamaerp.com") {
+    return {
+      _id: "demo_user_id" as any,
+      _creationTime: 0,
+      tokenIdentifier: identity.tokenIdentifier,
+      orgIds: ["demo_workspace"],
+      name: "زائر تجريبي",
+      email: "demo@salamaerp.com",
+      role: "demo_user",
+      isActive: true,
+    } as any;
   }
 
   const user = await ctx.db

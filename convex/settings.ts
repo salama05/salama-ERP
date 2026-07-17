@@ -1,6 +1,7 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { requirePermission, requireUser } from "./lib/auth";
+import { blockIfDemoOrg } from "./lib/demoGuard";
 
 export const getOrganizationSettings = query({
   args: {
@@ -49,7 +50,8 @@ export const updateOrganizationSettings = mutation({
   },
   handler: async (ctx, args) => {
     // Requires settings.manage permission (admin, OWNER, or custom role with permission)
-    const { user } = await requirePermission(ctx, "settings.manage");
+    const { user, orgId } = await requirePermission(ctx, "settings.manage");
+    blockIfDemoOrg(orgId, "تعديل إعدادات المؤسسة غير مسموح في وضع الديمو.");
 
     const existingSettings = await ctx.db
       .query("organization_settings")

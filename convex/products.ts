@@ -3,6 +3,7 @@ import { v } from "convex/values";
 import { getViewerContext } from "./lib/context";
 import { requirePermission } from "./lib/auth";
 import { logAudit } from "./lib/audit";
+import { blockIfDemoOrg } from "./lib/demoGuard";
 
 export const listProducts = query({
   args: {
@@ -120,6 +121,7 @@ export const updateProduct = mutation({
   },
   handler: async (ctx, args) => {
     const { user, orgId } = await requirePermission(ctx, "products.editPrice");
+    blockIfDemoOrg(orgId, "تعديل أسعار المنتجات غير مسموح في وضع الديمو.");
 
     const product = await ctx.db.get(args.productId);
     if (!product || product.orgId !== orgId) {
@@ -169,6 +171,7 @@ export const deleteProduct = mutation({
   },
   handler: async (ctx, args) => {
     const { user, orgId } = await requirePermission(ctx, "products.create"); // same level as create
+    blockIfDemoOrg(orgId, "حذف المنتجات غير مسموح في وضع الديمو.");
 
     const product = await ctx.db.get(args.productId);
     if (!product || product.orgId !== orgId) {

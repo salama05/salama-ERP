@@ -31,7 +31,7 @@ import {
 } from "@/lib/validations/merchantSettings";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { useAuth } from "@clerk/nextjs";
+import { useAuthSafe } from "@/hooks/useAuthSafe";
 
 const CURRENCIES = [
   { code: "DZD", label: "Dinar Algérien (DZD)" },
@@ -169,7 +169,7 @@ export function MerchantSettingsForm({
 }: MerchantSettingsFormProps) {
   const { language, dir } = useI18n();
   const isRTL = dir === "rtl";
-  const { orgId } = useAuth();
+  const { orgId } = useAuthSafe();
 
   const dict = {
     ...defaultDictionaries[language],
