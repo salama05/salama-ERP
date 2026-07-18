@@ -4,11 +4,13 @@ import React, { useEffect, useState } from "react";
 import { LanguageProvider, useI18n } from "@/lib/i18n";
 import { PublicLanguageSwitcher } from "@/components/ui/PublicLanguageSwitcher";
 import Link from "next/link";
+import { ClerkProvider } from "@clerk/nextjs";
 
 function AuthShellInner({ children }: { children: React.ReactNode }) {
   const { t, language, dir } = useI18n();
   const isRTL = dir === "rtl";
   const [mounted, setMounted] = useState(false);
+  const [isDemoMode, setIsDemoMode] = useState(false);
 
   useEffect(() => {
     document.documentElement.lang = language;
@@ -17,6 +19,11 @@ function AuthShellInner({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     setMounted(true);
+    // Check for demo session cookie
+    const demoCookie = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('demo_session='));
+    setIsDemoMode(demoCookie?.split('=')[1] === 'active');
   }, []);
 
   if (!mounted) return null;
@@ -107,7 +114,25 @@ function AuthShellInner({ children }: { children: React.ReactNode }) {
 
           {/* Right form panel */}
           <section className="surface-panel flex items-center justify-center p-4 sm:p-6 lg:p-8">
-            <div className="w-full max-w-md">{children}</div>
+            <div className="w-full max-w-md">
+              {isDemoMode ? (
+                <div className="text-center">
+                  <p className="text-sm text-[var(--color-text-secondary)]">
+                    Demo mode active. You cannot sign in or sign up during a demo session.
+                  </p>
+                  <button
+                    onClick={() => {
+                      window.location.href = "/overview";
+                    }}
+                    className="mt-4 text-sm font-semibold text-[var(--color-primary)] hover:underline"
+                  >
+                    Return to Dashboard
+                  </button>
+                </div>
+              ) : (
+                <ClerkProvider>{children}</ClerkProvider>
+              )}
+            </div>
           </section>
         </div>
       </main>

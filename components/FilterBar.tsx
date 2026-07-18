@@ -79,29 +79,29 @@ export function FilterBar({
   return (
     <div className="flex flex-wrap items-center gap-3 p-4 border border-[var(--color-border)] rounded-[var(--radius-lg)] bg-[var(--color-bg-elevated)]">
       {showDateRange && (
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
           <span className="text-sm font-medium text-[var(--color-text-muted)]">From</span>
           <Input
             type="date"
             value={dateFrom}
             onChange={(e) => setDateFrom(e.target.value || undefined)}
-            className="w-44"
+            className="w-full sm:w-44"
           />
           <span className="text-sm font-medium text-[var(--color-text-muted)]">To</span>
           <Input
             type="date"
             value={dateTo}
             onChange={(e) => setDateTo(e.target.value || undefined)}
-            className="w-44"
+            className="w-full sm:w-44"
           />
         </div>
       )}
 
       {showStatus && statusOptions.length > 0 && (
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
           <span className="text-sm font-medium text-[var(--color-text-muted)]">Status</span>
           <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger className="w-40">
+            <SelectTrigger className="w-full sm:w-40">
               <SelectValue placeholder="All" />
             </SelectTrigger>
             <SelectContent>
@@ -117,7 +117,7 @@ export function FilterBar({
       )}
 
       {showAmountRange && (
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
           <span className="text-sm font-medium text-[var(--color-text-muted)]">Amount</span>
           <Input
             type="number"
@@ -126,7 +126,7 @@ export function FilterBar({
             onChange={(e) =>
               setMinAmount(e.target.value ? Number(e.target.value) : undefined)
             }
-            className="w-28"
+            className="w-full sm:w-28"
           />
           <span className="text-sm font-medium text-[var(--color-text-muted)]">-</span>
           <Input
@@ -136,12 +136,12 @@ export function FilterBar({
             onChange={(e) =>
               setMaxAmount(e.target.value ? Number(e.target.value) : undefined)
             }
-            className="w-28"
+            className="w-full sm:w-28"
           />
         </div>
       )}
 
-      <Button variant="outline" onClick={handleReset} className="ml-auto">
+      <Button variant="outline" onClick={handleReset} className="ml-auto w-full sm:w-auto">
         <X className="h-4 w-4 mr-2" />
         Reset
       </Button>

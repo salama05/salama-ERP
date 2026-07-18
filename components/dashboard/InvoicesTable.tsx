@@ -84,15 +84,15 @@ export function InvoicesTable() {
 
   return (
     <div className="space-y-4">
-      <div className={cn("flex items-center justify-between", isRTL && "flex-row-reverse")}>
+      <div className={cn("flex flex-col sm:flex-row sm:items-center justify-between gap-4", isRTL && "sm:flex-row-reverse")}>
         <h1 className="text-3xl font-bold text-[var(--color-text-primary)]">{t("invoices")}</h1>
-        <div className={cn("flex items-center gap-2", isRTL && "flex-row-reverse")}>
-          <Button variant="outline" onClick={handleExportToExcel} className={cn("gap-2", isRTL && "flex-row-reverse")}>
+        <div className={cn("flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto", isRTL && "sm:flex-row-reverse")}>
+          <Button variant="outline" onClick={handleExportToExcel} className={cn("gap-2 w-full sm:w-auto", isRTL && "flex-row-reverse")}>
             <Download className="h-4 w-4" />
             {language === "ar" ? "تصدير Excel" : "Export Excel"}
           </Button>
-          <Link href="/invoices/create">
-            <Button className={cn("gap-2", isRTL && "flex-row-reverse")}>
+          <Link href="/invoices/create" className="w-full sm:w-auto">
+            <Button className={cn("gap-2 w-full sm:w-auto", isRTL && "flex-row-reverse")}>
               <Plus className="h-4 w-4" />
               {t("createNew")}
             </Button>

@@ -181,23 +181,23 @@ export function ProductsTable() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className={cn("flex items-center justify-between", isRTL && "flex-row-reverse")}>
+      <div className={cn("flex flex-col sm:flex-row sm:items-center justify-between gap-4", isRTL && "sm:flex-row-reverse")}>
         <div>
           <h1 className="text-3xl font-bold text-[var(--color-text-primary)]">{t("products")}</h1>
           <p className="text-sm text-[var(--color-text-muted)] mt-1">{filtered.length} {language === "ar" ? "منتج" : "products"}</p>
         </div>
-        <div className={cn("flex items-center gap-2", isRTL && "flex-row-reverse")}>
+        <div className={cn("flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto", isRTL && "sm:flex-row-reverse")}>
           <Button
             variant="outline"
             size="lg"
             onClick={handleExportToExcel}
-            className={cn("gap-2", isRTL && "flex-row-reverse")}
+            className={cn("gap-2 w-full sm:w-auto", isRTL && "flex-row-reverse")}
           >
             <Download className="h-5 w-5" />
             {language === "ar" ? "تصدير Excel" : "Export Excel"}
           </Button>
-          <Link href="/products/create">
-            <Button className={cn("gap-2", isRTL && "flex-row-reverse")} size="lg">
+          <Link href="/products/create" className="w-full sm:w-auto">
+            <Button className={cn("gap-2 w-full sm:w-auto", isRTL && "flex-row-reverse")} size="lg">
               <Plus className="h-5 w-5" />
               {t("createNew")}
             </Button>

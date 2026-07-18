@@ -2,11 +2,14 @@
 
 import { useEffect, useRef } from "react";
 import { FlaskConical, RefreshCcw, UserPlus } from "lucide-react";
+import { useClerk } from "@clerk/nextjs";
+import { useIsDemoMode } from "@/components/providers/convex-client-provider";
 
 interface DemoSessionExpiredModalProps {
   open: boolean;
   onRestart: () => void;
-  onSignup: () => void;
+  onSignup: (signupParams: string) => void;
+  signupParams: string;
 }
 
 /**
@@ -17,8 +20,11 @@ export function DemoSessionExpiredModal({
   open,
   onRestart,
   onSignup,
+  signupParams,
 }: DemoSessionExpiredModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const isDemoMode = useIsDemoMode();
+  const clerk = isDemoMode ? null : useClerk();
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -34,7 +40,7 @@ export function DemoSessionExpiredModal({
       ref={dialogRef}
       id="demo-expired-dialog"
       className="
-        fixed inset-0 m-auto w-full max-w-md rounded-2xl border border-[var(--color-border)]
+        fixed inset-0 m-auto w-full max-w-[90vw] sm:max-w-md rounded-2xl border border-[var(--color-border)]
         bg-[var(--color-bg-elevated)] p-0 shadow-2xl shadow-black/40
         backdrop:bg-black/60 backdrop:backdrop-blur-sm
         open:flex open:flex-col
@@ -86,7 +92,12 @@ export function DemoSessionExpiredModal({
       <div className="flex flex-col gap-3 px-8 pb-8">
         <button
           id="demo-expired-signup-btn"
-          onClick={onSignup}
+          onClick={async () => {
+            if (clerk) {
+              await clerk.signOut();
+            }
+            onSignup(signupParams);
+          }}
           className="
             flex items-center justify-center gap-2 rounded-full
             bg-[var(--color-primary)] px-6 py-3.5

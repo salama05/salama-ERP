@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { FlaskConical, X, UserPlus, Clock, Zap, AlertTriangle } from "lucide-react";
 import { useDemoSession } from "@/hooks/useDemoSession";
 import { getDemoPreferences } from "@/lib/demo-session";
 import { DemoSessionExpiredModal } from "./DemoSessionExpiredModal";
+import { useClerk } from "@clerk/nextjs";
+import { useIsDemoMode } from "@/components/providers/convex-client-provider";
 
 interface DemoBannerProps {
   /** Called when the user clicks "End Demo" */
@@ -27,6 +28,8 @@ export function DemoBanner({ onEndDemo }: DemoBannerProps) {
     exitDemo,
   } = useDemoSession();
 
+  const isActuallyDemoMode = useIsDemoMode();
+  const clerk = isActuallyDemoMode ? null : useClerk();
   const [showExpiredModal, setShowExpiredModal] = useState(false);
   const [signupParams, setSignupParams] = useState("");
 
@@ -51,6 +54,15 @@ export function DemoBanner({ onEndDemo }: DemoBannerProps) {
   const handleEndDemo = () => {
     exitDemo();
     onEndDemo?.();
+  };
+
+  const handleCreateAccount = async () => {
+    // Sign out from Clerk to clear demo session (only if not in demo mode)
+    if (clerk) {
+      await clerk.signOut();
+    }
+    // Redirect to sign-up page with full page reload
+    window.location.href = `/sign-up${signupParams}`;
   };
 
   if (!isDemoMode && !isExpired) return null;
@@ -121,8 +133,8 @@ export function DemoBanner({ onEndDemo }: DemoBannerProps) {
           </div>
 
           {/* CTA button */}
-          <Link
-            href={`/sign-up${signupParams}`}
+          <button
+            onClick={handleCreateAccount}
             id="demo-create-account-btn"
             className={`
               flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold
@@ -135,7 +147,7 @@ export function DemoBanner({ onEndDemo }: DemoBannerProps) {
             <UserPlus className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">أنشئ حسابي الحقيقي</span>
             <span className="sm:hidden">سجّل</span>
-          </Link>
+          </button>
         </div>
 
         {/* Right: End demo button */}
@@ -152,13 +164,14 @@ export function DemoBanner({ onEndDemo }: DemoBannerProps) {
       {/* ── Expired modal ──────────────────────────────────────────────────── */}
       <DemoSessionExpiredModal
         open={showExpiredModal}
+        signupParams={signupParams}
         onRestart={() => {
           setShowExpiredModal(false);
           window.location.href = "/demo";
         }}
-        onSignup={() => {
+        onSignup={(params) => {
           setShowExpiredModal(false);
-          window.location.href = `/sign-up${signupParams}`;
+          window.location.href = `/sign-up${params}`;
         }}
       />
     </>

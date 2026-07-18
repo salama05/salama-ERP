@@ -48,7 +48,7 @@ export default function DemoPage() {
     >
       {/* Glow orb */}
       <div
-        className="pointer-events-none absolute left-1/2 top-1/3 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-30 blur-3xl"
+        className="pointer-events-none absolute left-1/2 top-1/3 h-48 w-48 sm:h-72 sm:w-72 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-30 blur-3xl"
         style={{ background: "var(--color-brand)" }}
       />
 

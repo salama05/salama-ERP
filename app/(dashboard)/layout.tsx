@@ -1,9 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { OrganizationSwitcher, UserButton } from "@clerk/nextjs";
-import Link from "next/link";
 import { Building2, LogOut, UserRound } from "lucide-react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -36,6 +35,7 @@ import { DemoBanner } from "@/components/demo/DemoBanner";
 import { useIsDemoMode } from "@/components/providers/convex-client-provider";
 import { useDemoSession } from "@/hooks/useDemoSession";
 import { useAuthSafe } from "@/hooks/useAuthSafe";
+import { OrganizationSwitcherSafe, UserButtonSafe } from "@/components/auth/ClerkComponents";
 
 const NAV_SECTIONS = [
   {
@@ -255,7 +255,9 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
                   </span>
                 </div>
               ) : (
-                <OrganizationSwitcher hidePersonal={true} />
+                <div className="relative">
+                  <OrganizationSwitcherSafe hidePersonal={true} />
+                </div>
               )}
             </div>
           </div>
@@ -355,7 +357,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
                 </button>
               </div>
             ) : (
-              <UserButton />
+              <UserButtonSafe />
             )}
           </div>
         </header>
