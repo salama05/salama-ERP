@@ -170,8 +170,9 @@ export function Header({ theme, toggleTheme, collapsed, setCollapsed }: HeaderPr
           {showNotifications && (
             <div
               className={cn(
-                "absolute top-12 z-50 w-80 sm:w-96 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-xl dark:shadow-2xl overflow-hidden animate-scale-in",
-                isRTL ? "left-0" : "right-0"
+                "absolute top-12 z-[1000] w-80 sm:w-96 max-w-[calc(100vw-2rem)] rounded-2xl border shadow-2xl overflow-hidden animate-scale-in",
+                "bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-800 text-slate-900 dark:text-slate-100",
+                isRTL ? "right-0 sm:-right-12" : "right-0"
               )}
             >
               {/* Dropdown Header */}
