@@ -1,3 +1,5 @@
+import DemoLayout from "@/components/demo/DemoLayout";
+
 /**
  * Layout for the demo route group.
  * This layout intentionally does NOT include ClerkProvider or ConvexClientProvider
@@ -8,5 +10,5 @@ export default function DemoGroupLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return <DemoLayout>{children}</DemoLayout>;
 }

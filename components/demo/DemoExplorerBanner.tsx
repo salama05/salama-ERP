@@ -15,6 +15,7 @@ interface DemoExplorerBannerProps {
 /**
  * Sub-banner displayed at the top of settings/read-only pages when in demo mode.
  * Informs the user that the features are in exploration mode (read-only).
+ * Fully responsive on mobile viewports with zero overflow.
  */
 export function DemoExplorerBanner({ featureName }: DemoExplorerBannerProps) {
   const isDemoMode = useIsDemoMode();
@@ -39,16 +40,16 @@ export function DemoExplorerBanner({ featureName }: DemoExplorerBannerProps) {
   return (
     <div
       dir={dir}
-      className="surface-panel mb-6 flex items-start sm:items-center gap-3.5 p-4 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-950 dark:text-amber-200 shadow-sm animate-fade-up"
+      className="surface-panel mb-6 flex w-full max-w-full overflow-hidden items-start sm:items-center gap-3 p-3.5 sm:p-4 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-950 dark:text-amber-200 shadow-sm animate-fade-up"
     >
-      <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30">
-        <FlaskConical className="h-5 w-5" />
+      <div className="flex h-8 w-8 sm:h-9 sm:w-9 flex-shrink-0 items-center justify-center rounded-lg bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30">
+        <FlaskConical className="h-4 w-4 sm:h-5 sm:w-5" />
       </div>
 
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <h4 className="text-sm font-bold leading-none">{title}</h4>
-          <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 px-2 py-0.5 text-[11px] font-semibold text-amber-700 dark:text-amber-300">
+        <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+          <h4 className="text-xs sm:text-sm font-bold leading-none">{title}</h4>
+          <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] sm:text-[11px] font-semibold text-amber-700 dark:text-amber-300">
             <Eye className="h-3 w-3" />
             {language === "ar" ? "معاينة" : language === "fr" ? "Aperçu" : "Preview"}
           </span>
