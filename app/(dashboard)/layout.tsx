@@ -1,15 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
 import { LanguageProvider, useI18n } from "@/lib/i18n";
-import { cn } from "@/lib/utils";
 import { DemoBanner } from "@/components/demo/DemoBanner";
 import { Header } from "@/components/dashboard/Header";
-import { Sidebar } from "@/components/dashboard/Sidebar";
+import { SidebarContent, MobileDrawer } from "@/components/dashboard/Sidebar";
 
 const THEME_KEY = "saas_walaa_theme";
-const SIDEBAR_KEY = "saas_walaa_sidebar_collapsed";
 
 function getSaved<T extends string>(key: string, fallback: T): T {
   if (typeof window === "undefined") return fallback;
@@ -28,13 +25,11 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
   const { language, dir } = useI18n();
 
   const [theme, setTheme] = useState<"dark" | "light">("dark");
-  const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setTheme(getSaved(THEME_KEY, "dark"));
-    setCollapsed(window.localStorage.getItem(SIDEBAR_KEY) === "true");
     setMounted(true);
   }, []);
 
@@ -57,50 +52,36 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
     setTheme((current) => (current === "dark" ? "light" : "dark"));
   }, []);
 
-  const toggleSidebar = useCallback(() => {
-    setCollapsed((current) => {
-      const next = !current;
-      window.localStorage.setItem(SIDEBAR_KEY, String(next));
-      return next;
-    });
-  }, []);
-
   if (!mounted) return null;
 
   return (
     <div
       dir={dir}
       lang={language}
-      className="relative min-h-screen bg-[var(--color-bg-base)] text-[var(--color-text-primary)] overflow-x-hidden w-full max-w-full"
+      className="min-h-screen bg-[var(--color-bg-base)] text-[var(--color-text-primary)] flex flex-col lg:flex-row w-full max-w-full overflow-x-hidden"
     >
-      {/* Sidebar Component (Desktop fixed & Mobile Off-canvas Drawer) */}
-      <Sidebar
-        collapsed={collapsed}
-        toggleSidebar={toggleSidebar}
-        mobileOpen={mobileOpen}
-        setMobileOpen={setMobileOpen}
-      />
+      {/* Desktop Sidebar (Fixed on side for Desktop, hidden lg:block) */}
+      <aside className="hidden lg:block lg:w-64 shrink-0 border-l border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 min-h-screen sticky top-0 h-screen">
+        <SidebarContent />
+      </aside>
 
-      {/* Main Page Area */}
-      <div
-        className={cn(
-          "min-h-screen transition-[margin] duration-300 w-full max-w-full overflow-x-hidden flex flex-col",
-          collapsed ? "md:ms-[var(--sidebar-collapsed-width)]" : "md:ms-[var(--sidebar-width)]"
-        )}
-      >
+      {/* Mobile Off-Canvas Drawer (lg:hidden, active when mobileOpen === true) */}
+      {mobileOpen && (
+        <MobileDrawer onClose={() => setMobileOpen(false)} />
+      )}
+
+      {/* Main Content Area for Desktop & Mobile */}
+      <div className="flex-1 flex flex-col min-w-0 w-full overflow-x-hidden">
         <Header 
           theme={theme} 
           toggleTheme={toggleTheme} 
-          collapsed={collapsed} 
-          setCollapsed={setCollapsed}
-          mobileOpen={mobileOpen}
-          setMobileOpen={setMobileOpen}
+          onMobileToggle={() => setMobileOpen((prev) => !prev)}
         />
 
         {/* Demo Mode Alert Banner */}
         <DemoBanner />
 
-        <main className="mx-auto w-full max-w-[1600px] flex-1 px-3 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 overflow-x-hidden">
+        <main className="flex-1 p-4 md:p-6 overflow-y-auto">
           {children}
         </main>
       </div>

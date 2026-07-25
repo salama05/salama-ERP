@@ -81,104 +81,27 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8">
 
-      {/* ─── Header bar ──────────────────────────────────────────────────── */}
+      {/* ─── Date & Live Operations Bar ──────────────────────────────────── */}
       <div
         className={cn(
-          "surface-panel flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between",
+          "surface-panel flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-gray-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm",
           isRTL && "sm:flex-row-reverse"
         )}
       >
         <div className={cn("flex items-center gap-3", isRTL && "flex-row-reverse")}>
-          <Calendar className="h-5 w-5 text-[var(--color-brand-light)]" />
+          <Calendar className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
           <div>
-            <p className="text-xs uppercase tracking-[0.18em] text-[var(--color-text-muted)]">
+            <p className="text-xs uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400 font-bold">
               {t("today")}
             </p>
-            <p className="text-sm text-[var(--color-text-secondary)]">{getDateDisplay()}</p>
+            <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{getDateDisplay()}</p>
           </div>
         </div>
 
         <div className={cn("flex items-center gap-3", isRTL && "flex-row-reverse")}>
-          <div className="hidden items-center gap-2 rounded-full border border-[var(--color-border)] bg-[var(--color-bg-base)] px-3 py-2 text-sm text-[var(--color-text-secondary)] sm:flex">
-            <Sparkles className="h-4 w-4 text-[var(--color-brand-light)]" />
+          <div className="flex items-center gap-2 rounded-full border border-indigo-200 dark:border-indigo-900/50 bg-indigo-50/50 dark:bg-indigo-950/30 px-3.5 py-1.5 text-xs font-bold text-indigo-700 dark:text-indigo-300">
+            <Sparkles className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
             <span>{t("liveOperationsBoard")}</span>
-          </div>
-
-          {/* ── Notifications ── */}
-          <div className="relative">
-            <button
-              onClick={() => setShowNotifications((v) => !v)}
-              className="relative flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 transition hover:bg-gray-100 dark:hover:bg-slate-700"
-              aria-label={language === "ar" ? "الإشعارات" : "Notifications"}
-            >
-              <Bell className="h-4 w-4" />
-              {unreadCount > 0 && (
-                <span className="absolute right-1.5 top-1.5 h-2.5 w-2.5 rounded-full bg-rose-500" />
-              )}
-            </button>
-
-            {showNotifications && (
-              <div className="fixed inset-0 z-40" onClick={() => setShowNotifications(false)} />
-            )}
-
-            {showNotifications && (
-              <div
-                className={cn(
-                  "absolute z-50 mt-2 w-80 rounded-2xl border shadow-2xl overflow-hidden animate-fade-up",
-                  "bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-slate-900 dark:text-slate-100",
-                  isRTL ? "right-0" : "left-0"
-                )}
-              >
-                <div
-                  className={cn(
-                    "flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-slate-700 bg-gray-50/50 dark:bg-slate-800/80",
-                    isRTL && "flex-row-reverse"
-                  )}
-                >
-                  <p className="font-bold text-sm text-slate-900 dark:text-slate-100">
-                    {language === "ar" ? "الإشعارات" : language === "fr" ? "Notifications" : "Notifications"}
-                  </p>
-                  <button
-                    onClick={() => setShowNotifications(false)}
-                    className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
-                <div className="max-h-72 overflow-y-auto divide-y divide-gray-100 dark:divide-slate-700/50">
-                  {notifications.length === 0 ? (
-                    <p className="px-4 py-8 text-center text-sm font-medium text-slate-500 dark:text-slate-400">
-                      {language === "ar" ? "لا توجد إشعارات جديدة" : language === "fr" ? "Aucune notification" : "No notifications"}
-                    </p>
-                  ) : (
-                    (notifications as any[]).slice(0, 10).map((n) => (
-                      <div
-                        key={n._id}
-                        className={cn(
-                          "px-4 py-3 hover:bg-gray-50 dark:hover:bg-slate-700/40 transition",
-                          isRTL && "text-right"
-                        )}
-                      >
-                        <p className="text-sm font-bold text-slate-900 dark:text-slate-100">
-                          {n.type === "low_stock"
-                            ? language === "ar" ? "تنبيه مخزون منخفض" : "Low Stock Alert"
-                            : n.type === "product_expiry"
-                            ? language === "ar" ? "منتج قارب على الانتهاء" : "Product Expiry"
-                            : n.type}
-                        </p>
-                        <p className="text-xs text-slate-600 dark:text-slate-300 mt-0.5 line-clamp-2">
-                          {n.message}
-                        </p>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[linear-gradient(135deg,var(--color-brand-light),var(--color-brand))] text-sm font-semibold text-white shadow-lg">
-            U
           </div>
         </div>
       </div>
