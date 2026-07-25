@@ -14,7 +14,7 @@ interface DemoBannerProps {
 
 /**
  * Sticky demo-mode banner shown at the top of every dashboard page.
- * Fully responsive for mobile viewports with zero horizontal overflow.
+ * Single-line horizontal bar on mobile viewports with zero layout breakage.
  */
 export function DemoBanner({ onEndDemo }: DemoBannerProps) {
   const {
@@ -57,13 +57,13 @@ export function DemoBanner({ onEndDemo }: DemoBannerProps) {
 
   return (
     <>
-      {/* ── Banner Container (Mobile Responsive & Zero Overflow) ────────────────── */}
+      {/* ── Banner Container (Sleek Single-Line Horizontal Bar) ────────────────── */}
       <div
         role="alert"
         aria-label="Demo mode active"
         className={`
-          demo-banner relative z-50 flex w-full max-w-full overflow-x-hidden items-center justify-between gap-1.5 sm:gap-3
-          px-3 sm:px-4 py-1.5 sm:py-2.5 text-xs sm:text-sm font-medium flex-wrap sm:flex-nowrap
+          demo-banner relative z-50 flex w-full max-w-full items-center justify-between gap-2
+          px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium flex-nowrap whitespace-nowrap overflow-x-auto no-scrollbar
           ${isAlmostDone
             ? "bg-orange-500/95 text-white"
             : "bg-amber-400/95 text-amber-950"}
@@ -72,11 +72,11 @@ export function DemoBanner({ onEndDemo }: DemoBannerProps) {
         `}
       >
         {/* Left: Icon + Label */}
-        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-shrink">
+        <div className="flex items-center gap-1.5 min-w-0 flex-shrink-0">
           {isAlmostDone ? (
-            <AlertTriangle className="h-4 w-4 flex-shrink-0 animate-pulse text-white" />
+            <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0 animate-pulse text-white" />
           ) : (
-            <FlaskConical className="h-4 w-4 flex-shrink-0" />
+            <FlaskConical className="h-3.5 w-3.5 flex-shrink-0" />
           )}
           <span className="hidden sm:inline font-bold">وضع الديمو التجريبي</span>
           <span className="sm:hidden font-bold text-xs">ديمو</span>
@@ -85,7 +85,7 @@ export function DemoBanner({ onEndDemo }: DemoBannerProps) {
         </div>
 
         {/* Center: Timer + Ops Counter + Signup CTA */}
-        <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+        <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
           {/* Timer */}
           <div
             className="flex items-center gap-1 tabular-nums font-mono bg-black/10 px-2 py-0.5 rounded-full text-xs font-bold"
@@ -99,7 +99,7 @@ export function DemoBanner({ onEndDemo }: DemoBannerProps) {
 
           {/* Operations Counter */}
           <div
-            className="hidden xs:flex items-center gap-1 text-xs opacity-90"
+            className="hidden md:flex items-center gap-1 text-xs opacity-90"
             title="العمليات المتبقية"
           >
             <Zap className="h-3 w-3 opacity-80" />
@@ -112,7 +112,7 @@ export function DemoBanner({ onEndDemo }: DemoBannerProps) {
               onClick={() => { window.location.href = `/sign-up${signupParams}`; }}
               id="demo-create-account-btn"
               className={`
-                flex items-center gap-1 rounded-full px-2.5 sm:px-3 py-1 text-xs font-bold
+                flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold
                 transition hover:scale-105 active:scale-95 flex-shrink-0
                 ${isAlmostDone
                   ? "bg-white text-orange-600 hover:bg-orange-50 shadow-sm"
@@ -136,7 +136,7 @@ export function DemoBanner({ onEndDemo }: DemoBannerProps) {
           onClick={handleEndDemo}
           aria-label="إنهاء وضع الديمو"
           title="إنهاء وضع الديمو"
-          className="flex h-6 w-6 sm:h-7 sm:w-7 flex-shrink-0 items-center justify-center rounded-full opacity-75 hover:opacity-100 hover:bg-black/10 transition"
+          className="flex h-5 w-5 sm:h-6 sm:w-6 flex-shrink-0 items-center justify-center rounded-full opacity-75 hover:opacity-100 hover:bg-black/10 transition"
         >
           <X className="h-3.5 w-3.5" />
         </button>

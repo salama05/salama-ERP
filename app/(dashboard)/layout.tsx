@@ -237,8 +237,10 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
       </aside>
 
       <div
-        className="min-h-screen transition-[margin] duration-300"
-        style={{ marginInlineStart: collapsed ? "var(--sidebar-collapsed-width)" : "var(--sidebar-width)" }}
+        className={cn(
+          "min-h-screen transition-[margin] duration-300",
+          collapsed ? "md:ms-[var(--sidebar-collapsed-width)]" : "md:ms-[var(--sidebar-width)]"
+        )}
       >
         <Header 
           theme={theme} 
