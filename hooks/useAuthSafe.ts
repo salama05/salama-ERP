@@ -1,25 +1,11 @@
 "use client";
 
-import { useAuth as useClerkAuth } from "@clerk/nextjs";
-import { useIsDemoMode } from "@/components/providers/convex-client-provider";
+import { useAuthSafeContext } from "@/components/providers/convex-client-provider";
 
 /**
- * Demo-aware wrapper for Clerk's useAuth hook.
- * Returns safe values when in demo mode (no Clerk session).
+ * Demo-aware wrapper for auth state.
+ * Returns safe auth values in both Clerk and Demo modes without throwing.
  */
 export function useAuthSafe() {
-  const isDemoMode = useIsDemoMode();
-  const clerkAuth = useClerkAuth();
-
-  if (isDemoMode) {
-    return {
-      userId: "demo-user-id",
-      orgId: "demo-org-id",
-      isLoaded: true,
-      isSignedIn: true,
-      getToken: async () => "demo-token",
-    };
-  }
-
-  return clerkAuth;
+  return useAuthSafeContext();
 }

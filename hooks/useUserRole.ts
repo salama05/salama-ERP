@@ -1,26 +1,12 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
-import { useIsDemoMode } from "@/components/providers/convex-client-provider";
+import { useAuthSafeContext, UserRole } from "@/components/providers/convex-client-provider";
 
-export type UserRole = "OWNER" | "STAFF";
+export type { UserRole };
 
 export function useUserRole(): UserRole | null {
-  const isDemoMode = useIsDemoMode();
-  
-  // In demo mode, default to OWNER role since there's no real auth
-  if (isDemoMode) {
-    return "OWNER";
-  }
-
-  const { user, isLoaded } = useUser();
-
-  if (!isLoaded || !user) {
-    return null;
-  }
-
-  const role = user.publicMetadata?.role as UserRole | undefined;
-  return role ?? "OWNER"; // Default to OWNER if not set (merchant is always the owner)
+  const auth = useAuthSafeContext();
+  return auth.userRole;
 }
 
 export function useCanViewAnalytics(): boolean {

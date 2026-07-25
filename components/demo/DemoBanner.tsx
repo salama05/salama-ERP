@@ -5,17 +5,23 @@ import { FlaskConical, X, UserPlus, Clock, Zap, AlertTriangle } from "lucide-rea
 import { useDemoSession } from "@/hooks/useDemoSession";
 import { getDemoPreferences } from "@/lib/demo-session";
 import { DemoSessionExpiredModal } from "./DemoSessionExpiredModal";
-import { useClerk } from "@clerk/nextjs";
 import { useIsDemoMode } from "@/components/providers/convex-client-provider";
+import { DemoBannerWithClerk } from "./DemoBannerWithClerk";
+// ⚠️  useClerk is NOT imported here — it lives in DemoBannerWithClerk.tsx
+//     which is only mounted when <ClerkProvider> is present (non-demo mode).
 
 interface DemoBannerProps {
-  /** Called when the user clicks "End Demo" */
   onEndDemo?: () => void;
 }
 
 /**
- * Sticky demo mode banner shown at the top of every dashboard page.
- * Displays session timer, operation count, and CTA to create a real account.
+ * Sticky demo-mode banner shown at the top of every dashboard page.
+ *
+ * Architecture note:
+ *   - In REAL mode  → <DemoBannerWithClerk> is rendered (ClerkProvider wraps it)
+ *   - In DEMO mode  → plain <button> is rendered (no ClerkProvider → no useClerk)
+ *
+ * This split guarantees useClerk() is NEVER called outside <ClerkProvider>.
  */
 export function DemoBanner({ onEndDemo }: DemoBannerProps) {
   const {
@@ -28,8 +34,9 @@ export function DemoBanner({ onEndDemo }: DemoBannerProps) {
     exitDemo,
   } = useDemoSession();
 
+  // True when the app is running under DemoConvexProvider (no ClerkProvider)
   const isActuallyDemoMode = useIsDemoMode();
-  const clerk = isActuallyDemoMode ? null : useClerk();
+
   const [showExpiredModal, setShowExpiredModal] = useState(false);
   const [signupParams, setSignupParams] = useState("");
 
@@ -46,23 +53,12 @@ export function DemoBanner({ onEndDemo }: DemoBannerProps) {
 
   // Show expired modal when session runs out
   useEffect(() => {
-    if (isExpired) {
-      setShowExpiredModal(true);
-    }
+    if (isExpired) setShowExpiredModal(true);
   }, [isExpired]);
 
   const handleEndDemo = () => {
     exitDemo();
     onEndDemo?.();
-  };
-
-  const handleCreateAccount = async () => {
-    // Sign out from Clerk to clear demo session (only if not in demo mode)
-    if (clerk) {
-      await clerk.signOut();
-    }
-    // Redirect to sign-up page with full page reload
-    window.location.href = `/sign-up${signupParams}`;
   };
 
   if (!isDemoMode && !isExpired) return null;
@@ -71,7 +67,7 @@ export function DemoBanner({ onEndDemo }: DemoBannerProps) {
 
   return (
     <>
-      {/* ── Banner ─────────────────────────────────────────────────────────── */}
+      {/* ── Banner ─────────────────────────────────────────────────────── */}
       <div
         role="alert"
         aria-label="Demo mode active"
@@ -85,26 +81,20 @@ export function DemoBanner({ onEndDemo }: DemoBannerProps) {
           transition-colors duration-700
         `}
       >
-        {/* Left: Icon + label */}
+        {/* Left: icon + label */}
         <div className="flex items-center gap-2 min-w-0">
           {isAlmostDone ? (
             <AlertTriangle className="h-4 w-4 flex-shrink-0 animate-pulse" />
           ) : (
             <FlaskConical className="h-4 w-4 flex-shrink-0" />
           )}
-          <span className="hidden sm:inline font-semibold">
-            وضع الديمو التجريبي
-          </span>
-          <span className="sm:hidden font-semibold text-xs">
-            ديمو
-          </span>
+          <span className="hidden sm:inline font-semibold">وضع الديمو التجريبي</span>
+          <span className="sm:hidden font-semibold text-xs">ديمو</span>
           <span className="hidden md:inline opacity-75">—</span>
-          <span className="hidden md:inline text-xs opacity-75">
-            البيانات وهمية ولن تُحفظ
-          </span>
+          <span className="hidden md:inline text-xs opacity-75">البيانات وهمية ولن تُحفظ</span>
         </div>
 
-        {/* Center: Timer + ops */}
+        {/* Center: timer + ops counter + CTA */}
         <div className="flex items-center gap-4 flex-shrink-0">
           {/* Timer */}
           <div
@@ -127,30 +117,47 @@ export function DemoBanner({ onEndDemo }: DemoBannerProps) {
             title="العمليات المتبقية"
           >
             <Zap className="h-3.5 w-3.5 opacity-70" />
-            <span className="text-xs">
-              {operationsLeft} عملية
-            </span>
+            <span className="text-xs">{operationsLeft} عملية</span>
           </div>
 
-          {/* CTA button */}
-          <button
-            onClick={handleCreateAccount}
-            id="demo-create-account-btn"
-            className={`
-              flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold
-              transition hover:scale-105 active:scale-95
-              ${isAlmostDone
-                ? "bg-white text-orange-600 hover:bg-orange-50"
-                : "bg-amber-900/90 text-amber-100 hover:bg-amber-950"}
-            `}
-          >
-            <UserPlus className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">أنشئ حسابي الحقيقي</span>
-            <span className="sm:hidden">سجّل</span>
-          </button>
+          {/*
+           * ──────────────────────────────────────────────────────────────
+           * KEY FIX: Conditionally render the correct CTA button.
+           *
+           *  • isActuallyDemoMode = true  → <ClerkProvider> is NOT present
+           *    → render a plain button (no useClerk)
+           *
+           *  • isActuallyDemoMode = false → <ClerkProvider> IS present
+           *    → render DemoBannerWithClerk which safely calls useClerk()
+           * ──────────────────────────────────────────────────────────────
+           */}
+          {isActuallyDemoMode ? (
+            // Plain button — no Clerk dependency
+            <button
+              onClick={() => { window.location.href = `/sign-up${signupParams}`; }}
+              id="demo-create-account-btn"
+              className={`
+                flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold
+                transition hover:scale-105 active:scale-95
+                ${isAlmostDone
+                  ? "bg-white text-orange-600 hover:bg-orange-50"
+                  : "bg-amber-900/90 text-amber-100 hover:bg-amber-950"}
+              `}
+            >
+              <UserPlus className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">أنشئ حسابي الحقيقي</span>
+              <span className="sm:hidden">سجّل</span>
+            </button>
+          ) : (
+            // Clerk-aware button — only mounted when ClerkProvider is present
+            <DemoBannerWithClerk
+              signupParams={signupParams}
+              isAlmostDone={isAlmostDone}
+            />
+          )}
         </div>
 
-        {/* Right: End demo button */}
+        {/* Right: end demo button */}
         <button
           onClick={handleEndDemo}
           aria-label="إنهاء وضع الديمو"
@@ -161,7 +168,7 @@ export function DemoBanner({ onEndDemo }: DemoBannerProps) {
         </button>
       </div>
 
-      {/* ── Expired modal ──────────────────────────────────────────────────── */}
+      {/* ── Expired modal ───────────────────────────────────────────────── */}
       <DemoSessionExpiredModal
         open={showExpiredModal}
         signupParams={signupParams}

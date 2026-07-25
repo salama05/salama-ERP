@@ -14,6 +14,7 @@ import type * as backup from "../backup.js";
 import type * as counters from "../counters.js";
 import type * as crons from "../crons.js";
 import type * as customers from "../customers.js";
+import type * as dashboard from "../dashboard.js";
 import type * as demo from "../demo.js";
 import type * as finance from "../finance.js";
 import type * as invoices from "../invoices.js";
@@ -46,6 +47,7 @@ declare const fullApi: ApiFromModules<{
   counters: typeof counters;
   crons: typeof crons;
   customers: typeof customers;
+  dashboard: typeof dashboard;
   demo: typeof demo;
   finance: typeof finance;
   invoices: typeof invoices;

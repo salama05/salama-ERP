@@ -32,6 +32,7 @@ import { GlobalSearch } from "@/components/GlobalSearch";
 import { LanguageProvider, useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { DemoBanner } from "@/components/demo/DemoBanner";
+import { Header } from "@/components/dashboard/Header";
 import { useIsDemoMode } from "@/components/providers/convex-client-provider";
 import { useDemoSession } from "@/hooks/useDemoSession";
 import { useAuthSafe } from "@/hooks/useAuthSafe";
@@ -109,6 +110,11 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
     window.localStorage.setItem(THEME_KEY, theme);
   }, [theme]);
 
@@ -185,7 +191,13 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
                 )}
                 <div className="space-y-1">
                   {section.items.map((item) => {
-                    const isActive = pathname === item.href || (item.href !== "/overview" && pathname.startsWith(item.href));
+                    // Exact-match routes (have children that would otherwise cause false-positive).
+                    // For /overview we already special-case; for /settings sub-routes we need exact match
+                    // so that /settings doesn't stay active when /settings/users is open.
+                    const EXACT_MATCH_HREFS = ["/overview", "/settings", "/settings/users", "/settings/audit-log"];
+                    const isActive =
+                      pathname === item.href ||
+                      (!EXACT_MATCH_HREFS.includes(item.href) && pathname.startsWith(item.href));
                     const label = language === "ar" ? item.labelAr : language === "en" ? item.labelEn : item.labelFr;
                     const Icon = item.icon;
 
@@ -228,145 +240,18 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
         className="min-h-screen transition-[margin] duration-300"
         style={{ marginInlineStart: collapsed ? "var(--sidebar-collapsed-width)" : "var(--sidebar-width)" }}
       >
-        <header
-          className={cn(
-            "sticky top-0 z-20 flex h-[var(--navbar-height)] items-center justify-between border-b border-[var(--glass-border)] px-4 sm:px-6",
-            "glass",
-            isRTL && "flex-row-reverse"
-          )}
-        >
-          <div className={cn("flex items-center gap-3", isRTL && "flex-row-reverse")}> 
-            <div className="md:hidden flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[linear-gradient(135deg,var(--color-brand-light),var(--color-brand))] text-xs font-bold text-white">
-                S
-              </div>
-              <span className="font-bold tracking-tight">Salama ERP</span>
-            </div>
-            <div className="hidden md:block">
-              {isDemoMode ? (
-                <div className="flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-xs font-semibold text-amber-400">
-                  <Building2 className="h-3.5 w-3.5" />
-                  <span>
-                    {language === "ar"
-                      ? "متجر سلامة التجريبي"
-                      : language === "fr"
-                        ? "Boutique démo Salama"
-                        : "Salama demo store"}
-                  </span>
-                </div>
-              ) : (
-                <div className="relative">
-                  <OrganizationSwitcherSafe hidePersonal={true} />
-                </div>
-              )}
-            </div>
-          </div>
-          
-          <div className="hidden lg:flex flex-1 justify-center px-4">
-            <GlobalSearch />
-          </div>
-
-          <div className={cn("flex items-center gap-2 sm:gap-3", isRTL && "flex-row-reverse")}>
-            <div className="hidden items-center gap-1 rounded-full border border-[var(--color-border)] bg-[var(--color-bg-elevated)] p-1 sm:flex">
-              {languageOptions.map((option) => {
-                const active = language === option.code;
-
-                return (
-                  <button
-                    key={option.code}
-                    onClick={() => setLanguage(option.code)}
-                    className={cn(
-                      "rounded-full px-3 py-1.5 text-xs font-semibold transition",
-                      active ? "bg-[var(--color-primary)] text-white" : "text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
-                    )}
-                  >
-                    {option.label}
-                  </button>
-                );
-              })}
-            </div>
-
-            <div className="flex items-center gap-2 sm:hidden">
-              <select
-                aria-label="Switch language"
-                value={language}
-                onChange={(event) => setLanguage(event.target.value as "fr" | "en" | "ar")}
-                className="h-9 rounded-full border border-[var(--color-border)] bg-[var(--color-bg-elevated)] px-3 text-xs font-semibold text-[var(--color-text-primary)]"
-              >
-                <option value="fr">FR</option>
-                <option value="en">EN</option>
-                <option value="ar">AR</option>
-              </select>
-            </div>
-
-            <button
-              onClick={toggleTheme}
-              aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--color-border)] bg-[var(--color-bg-elevated)] text-[var(--color-text-secondary)] transition hover:scale-105 active:scale-95"
-            >
-              {theme === "dark" ? <Sun className="h-4 w-4 text-amber-300" /> : <Moon className="h-4 w-4 text-[var(--color-brand)]" />}
-            </button>
-
-            <button
-              aria-label="Notifications"
-              className="relative flex h-9 w-9 items-center justify-center rounded-full border border-[var(--color-border)] bg-[var(--color-bg-elevated)] text-[var(--color-text-secondary)] transition hover:scale-105 active:scale-95"
-              onClick={() => setShowNotifications(!showNotifications)}
-            >
-              <Bell className="h-4 w-4" />
-              {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
-                  {unreadCount > 99 ? "99+" : unreadCount}
-                </span>
-              )}
-            </button>
-
-            {isDemoMode ? (
-              <div className="flex items-center gap-2">
-                <div
-                  className="hidden sm:flex items-center gap-2 rounded-full border border-[var(--color-border)] bg-[var(--color-bg-elevated)] px-3 py-1.5 text-xs font-medium text-[var(--color-text-secondary)]"
-                  title={
-                    language === "ar"
-                      ? "زائر تجريبي"
-                      : language === "fr"
-                        ? "Visiteur démo"
-                        : "Demo visitor"
-                  }
-                >
-                  <UserRound className="h-3.5 w-3.5" />
-                  <span>
-                    {language === "ar"
-                      ? "زائر تجريبي"
-                      : language === "fr"
-                        ? "Visiteur démo"
-                        : "Demo visitor"}
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  onClick={exitDemo}
-                  aria-label={
-                    language === "ar"
-                      ? "إنهاء وضع الديمو"
-                      : language === "fr"
-                        ? "Quitter la démo"
-                        : "Exit demo"
-                  }
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--color-border)] bg-[var(--color-bg-elevated)] text-[var(--color-text-secondary)] transition hover:scale-105 active:scale-95"
-                >
-                  <LogOut className="h-4 w-4" />
-                </button>
-              </div>
-            ) : (
-              <UserButtonSafe />
-            )}
-          </div>
-        </header>
+        <Header 
+          theme={theme} 
+          toggleTheme={toggleTheme} 
+          collapsed={collapsed} 
+          setCollapsed={setCollapsed} 
+        />
 
         {/* Demo mode alert banner */}
         <DemoBanner />
 
         <main className="mx-auto w-full max-w-[1600px] flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-          <div className="animate-fade-up">{children}</div>
+          {children}
         </main>
       </div>
     </div>

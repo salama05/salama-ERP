@@ -845,3 +845,59 @@ html[dir="rtl"] .nav-indicator {
     background: var(--color-danger);
     animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
+
+/* ── Clerk Dark Theme Overrides ── */
+.cl-rootBox {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+.cl-card {
+    box-shadow: none !important;
+    max-width: 100% !important;
+    width: 100% !important;
+}
+html[data-theme="dark"] .cl-card,
+html.dark .cl-card,
+html[data-theme="dark"] .cl-rootBox,
+html.dark .cl-rootBox,
+html[data-theme="dark"] .cl-navbar,
+html.dark .cl-navbar,
+html[data-theme="dark"] .cl-pageScrollBox,
+html.dark .cl-pageScrollBox,
+html[data-theme="dark"] .cl-scrollBox,
+html.dark .cl-scrollBox {
+    background-color: #0f172a !important;
+    color: #f8fafc !important;
+    border-color: #334155 !important;
+}
+html[data-theme="dark"] .cl-headerTitle,
+html.dark .cl-headerTitle,
+html[data-theme="dark"] .cl-profileSectionTitleText,
+html.dark .cl-profileSectionTitleText,
+html[data-theme="dark"] .cl-formFieldLabel,
+html.dark .cl-formFieldLabel,
+html[data-theme="dark"] .cl-userPreviewTextContainer,
+html.dark .cl-userPreviewTextContainer {
+    color: #f8fafc !important;
+}
+html[data-theme="dark"] .cl-headerSubtitle,
+html.dark .cl-headerSubtitle,
+html[data-theme="dark"] .cl-profileSectionSubtitleText,
+html.dark .cl-profileSectionSubtitleText,
+html[data-theme="dark"] .cl-formFieldHintText,
+html.dark .cl-formFieldHintText {
+    color: #94a3b8 !important;
+}
+html[data-theme="dark"] .cl-navbarButton {
+    color: #cbd5e1 !important;
+}
+html[data-theme="dark"] .cl-navbarButton:hover,
+html.dark .cl-navbarButton:hover {
+    background-color: #1e293b !important;
+    color: #f8fafc !important;
+}
+html[data-theme="dark"] .cl-navbarButton[data-active="true"],
+html.dark .cl-navbarButton[data-active="true"] {
+    background-color: #1e293b !important;
+    color: #818cf8 !important;
+}

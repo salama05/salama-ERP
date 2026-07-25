@@ -31,12 +31,7 @@ export default clerkMiddleware(async (auth, request: NextRequest) => {
 
   if (isDemoSession) {
     console.log(`[Middleware] 🎭 Demo session detected for: ${pathname}`);
-    // Block owner-only routes even in demo mode
-    if (ownerOnlyRoutes(request)) {
-      console.log(`[Middleware] 🚫 Demo user blocked from owner route: ${pathname}`);
-      return NextResponse.redirect(new URL("/pos", request.url));
-    }
-    // Allow everything else through — no Clerk check
+    // Allow all routes through in demo mode for exploration — no Clerk check
     return NextResponse.next();
   }
 

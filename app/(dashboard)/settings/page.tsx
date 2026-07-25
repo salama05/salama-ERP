@@ -4,6 +4,7 @@ import { Settings as SettingsIcon } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { MerchantSettingsForm } from "@/components/dashboard/MerchantSettingsForm";
+import { DemoExplorerBanner } from "@/components/demo/DemoExplorerBanner";
 
 export default function SettingsPage() {
   const { t, dir, language, setLanguage } = useI18n();
@@ -11,12 +12,23 @@ export default function SettingsPage() {
 
   return (
     <div className={cn("mx-auto max-w-5xl space-y-6", isRTL && "text-right")} dir={dir}>
+      {/* Demo exploration banner */}
+      <DemoExplorerBanner
+        featureName={{
+          ar: "إعدادات المتجر",
+          fr: "Paramètres du magasin",
+          en: "Store Settings",
+        }}
+      />
+
       <div className="surface-panel p-6">
         <div className={cn("flex items-center gap-3", isRTL && "flex-row-reverse")}>
           <SettingsIcon className="h-7 w-7 text-[var(--color-brand-light)]" />
           <div>
             <p className="section-kicker w-fit">{t("settings")}</p>
-            <h1 className="mt-3 text-3xl font-bold tracking-tight">{language === "ar" ? "إعدادات المتجر" : language === "fr" ? "Paramètres du magasin" : "Store settings"}</h1>
+            <h1 className="mt-3 text-3xl font-bold tracking-tight">
+              {language === "ar" ? "إعدادات المتجر" : language === "fr" ? "Paramètres du magasin" : "Store settings"}
+            </h1>
           </div>
         </div>
       </div>
@@ -51,9 +63,8 @@ export default function SettingsPage() {
           </div>
         </section>
 
-        {/* Merchant Settings Form with dynamic validations and RTL support */}
+        {/* Merchant Settings Form */}
         <MerchantSettingsForm />
-
 
         <section className="surface-panel p-6">
           <h3 className="text-lg font-semibold">{t("security")}</h3>

@@ -119,21 +119,27 @@ export function InvoicesTable() {
         })}
       />
 
-      <div dir={dir} className="overflow-x-auto border rounded-lg">
+      <div
+        dir={dir}
+        className="overflow-x-auto border border-[var(--color-border)] rounded-xl bg-[var(--color-bg-elevated)]"
+      >
         <table className="w-full">
-          <thead className="bg-[var(--color-bg-hover)] border-b">
+          <thead
+            className="border-b border-[var(--color-border)]"
+            style={{ backgroundColor: "var(--color-bg-surface)" }}
+          >
             <tr>
-              <th className={cn("px-4 py-3 text-sm font-semibold", isRTL ? "text-right" : "text-left")}>{t("invoiceNumber")}</th>
-              <th className={cn("px-4 py-3 text-sm font-semibold", isRTL ? "text-right" : "text-left")}>{t("customers")}</th>
-              <th className={cn("px-4 py-3 text-sm font-semibold", isRTL ? "text-right" : "text-left")}>{t("type")}</th>
-              <th className="px-4 py-3 text-right text-sm font-semibold">{t("amount")}</th>
-              <th className="px-4 py-3 text-right text-sm font-semibold">{t("paid")}</th>
-              <th className="px-4 py-3 text-right text-sm font-semibold">{t("debt")}</th>
-              <th className={cn("px-4 py-3 text-sm font-semibold", isRTL ? "text-right" : "text-left")}>{t("status")}</th>
-              <th className="px-4 py-3 text-center text-sm font-semibold">{t("actions")}</th>
+              <th className={cn("px-4 py-3 text-sm font-semibold text-[var(--color-text-muted)]", isRTL ? "text-right" : "text-left")}>{t("invoiceNumber")}</th>
+              <th className={cn("px-4 py-3 text-sm font-semibold text-[var(--color-text-muted)]", isRTL ? "text-right" : "text-left")}>{t("customers")}</th>
+              <th className={cn("px-4 py-3 text-sm font-semibold text-[var(--color-text-muted)]", isRTL ? "text-right" : "text-left")}>{t("type")}</th>
+              <th className="px-4 py-3 text-right text-sm font-semibold text-[var(--color-text-muted)]">{t("amount")}</th>
+              <th className="px-4 py-3 text-right text-sm font-semibold text-[var(--color-text-muted)]">{t("paid")}</th>
+              <th className="px-4 py-3 text-right text-sm font-semibold text-[var(--color-text-muted)]">{t("debt")}</th>
+              <th className={cn("px-4 py-3 text-sm font-semibold text-[var(--color-text-muted)]", isRTL ? "text-right" : "text-left")}>{t("status")}</th>
+              <th className="px-4 py-3 text-center text-sm font-semibold text-[var(--color-text-muted)]">{t("actions")}</th>
             </tr>
           </thead>
-          <tbody className="divide-y">
+          <tbody className="divide-y divide-[var(--color-border)]">
             {filteredInvoices.length > 0 ? (
               filteredInvoices.map((invoice) => (
                 <tr key={invoice._id} className="hover:bg-[var(--color-bg-hover)]">

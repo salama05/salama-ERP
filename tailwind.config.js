@@ -1,9 +1,13 @@
-n /** @type {import('tailwindcss').Config} */
+/** @type {import('tailwindcss').Config} */
 module.exports = {
+  // تفعيل خيار Dark Mode عن طريق إضافة class="dark" في الـ html/body
+  darkMode: 'class',
+
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/**/*.{js,ts,jsx,tsx,mdx}", // أضفنا src لضمان معالجة باقي مكونات المشروع
   ],
   theme: {
     extend: {
@@ -32,9 +36,9 @@ module.exports = {
         text: '#111827',         // Gray-900 primary text (16.1:1 contrast ✅)
         primary: '#4F46E5',      // Indigo-600 brand primary
         secondary: '#0D9488',    // Teal-600 secondary
-        success: '#15803D',      // Green-700 (WCAG AA on green-100 ✅)
-        warning: '#B45309',      // Amber-700 (WCAG AA on amber-100 ✅)
-        danger: '#B91C1C',       // Red-700 (WCAG AA on red-100 ✅)
+        success: '#15803D',      // Green-700
+        warning: '#B45309',      // Amber-700
+        danger: '#B91C1C',       // Red-700
         muted: '#6B7280',        // Gray-500 secondary text
         border: '#E5E7EB',       // Gray-200 borders
         
@@ -51,29 +55,29 @@ module.exports = {
           dim: '#EEF2FF',       // Indigo-50
         },
         success: {
-          DEFAULT: '#15803D',   // Green-700 — 5.1:1 on green-100 ✅
+          DEFAULT: '#15803D',   // Green-700
           light: '#16A34A',     // Green-600
           dim: '#DCFCE7',       // Green-100
         },
         warning: {
-          DEFAULT: '#B45309',   // Amber-700 — 5.8:1 on amber-100 ✅
+          DEFAULT: '#B45309',   // Amber-700
           light: '#D97706',     // Amber-600
           dim: '#FEF3C7',       // Amber-100
         },
         danger: {
-          DEFAULT: '#B91C1C',   // Red-700 — 6.3:1 on red-100 ✅
+          DEFAULT: '#B91C1C',   // Red-700
           light: '#DC2626',     // Red-600
           dim: '#FEE2E2',       // Red-100
         },
         info: {
-          DEFAULT: '#0E7490',   // Cyan-700 — 5.4:1 on cyan-100 ✅
+          DEFAULT: '#0E7490',   // Cyan-700
           light: '#0891B2',     // Cyan-600
           dim: '#CFFAFE',       // Cyan-100
         },
         text: {
-          primary: '#111827',   // Gray-900 — WCAG AAA (16.1:1 on #F9FAFB) ✅
-          secondary: '#374151', // Gray-700 — WCAG AA  (7.4:1 on #F9FAFB)  ✅
-          muted: '#6B7280',     // Gray-500 — WCAG AA  (4.6:1 on #F9FAFB)  ✅
+          primary: '#111827',   // Gray-900
+          secondary: '#374151', // Gray-700
+          muted: '#6B7280',     // Gray-500
           disabled: '#9CA3AF',  // Gray-400
         },
         border: {
@@ -110,5 +114,4 @@ module.exports = {
     },
   },
   plugins: [],
-  darkMode: 'class',
 }

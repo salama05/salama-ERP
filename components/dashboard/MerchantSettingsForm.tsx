@@ -163,6 +163,8 @@ export interface MerchantSettingsFormProps {
   onSaveSuccess?: (payload: MerchantSettingsFormValues) => void;
 }
 
+import { useIsDemoMode } from "@/components/providers/convex-client-provider";
+
 export function MerchantSettingsForm({
   translations: customTranslations,
   onSaveSuccess,
@@ -170,6 +172,7 @@ export function MerchantSettingsForm({
   const { language, dir } = useI18n();
   const isRTL = dir === "rtl";
   const { orgId } = useAuthSafe();
+  const isDemoMode = useIsDemoMode();
 
   const dict = {
     ...defaultDictionaries[language],
@@ -180,10 +183,10 @@ export function MerchantSettingsForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [saveStatus, setSaveStatus] = useState<"idle" | "success" | "error">("idle");
 
-  // Fetch settings from Convex
+  // Fetch settings from Convex — skip entirely in demo mode (no JWT available)
   const serverSettings = useQuery(
     api.settings.getOrganizationSettings,
-    orgId ? { orgId } : "skip"
+    isDemoMode || !orgId ? "skip" : { orgId }
   );
 
   // Convex mutation
@@ -820,13 +823,31 @@ export function MerchantSettingsForm({
         <div className={cn("flex flex-col sm:flex-row items-center gap-4 pt-4", isRTL ? "justify-start sm:flex-row-reverse" : "justify-start")}>
           <Button
             type="submit"
-            disabled={isSubmitting}
-            className="w-full sm:w-auto px-6 py-2 bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] transition-all font-semibold rounded-lg shadow-sm"
+            disabled={isSubmitting || isDemoMode}
+            className="w-full sm:w-auto px-6 py-2 bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] transition-all font-semibold rounded-lg shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isSubmitting ? dict.savingText : dict.saveButton}
+            {isSubmitting
+              ? dict.savingText
+              : isDemoMode
+              ? language === "ar"
+                ? "وضع الديمو (حفظ المعاملات معطّل)"
+                : language === "fr"
+                ? "Mode Démo (Enregistrement désactivé)"
+                : "Demo Mode (Saving Disabled)"
+              : dict.saveButton}
           </Button>
 
-          {saveStatus === "success" && (
+          {isDemoMode && (
+            <p className="text-xs text-amber-500 font-medium animate-fade-in">
+              {language === "ar"
+                ? "إعدادات المتجر للعرض والاستكشاف فقط في جلسة الديمو."
+                : language === "fr"
+                ? "Les paramètres sont en lecture seule en mode démo."
+                : "Store settings are read-only in demo mode."}
+            </p>
+          )}
+
+          {saveStatus === "success" && !isDemoMode && (
             <p className="text-sm text-green-500 font-medium animate-fade-in">
               {language === "ar"
                 ? "تم حفظ الإعدادات بنجاح!"
@@ -836,7 +857,7 @@ export function MerchantSettingsForm({
             </p>
           )}
 
-          {saveStatus === "error" && (
+          {saveStatus === "error" && !isDemoMode && (
             <p className="text-sm text-red-500 font-medium animate-fade-in">
               {language === "ar"
                 ? "حدث خطأ أثناء حفظ الإعدادات."

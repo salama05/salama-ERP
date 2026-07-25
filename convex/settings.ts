@@ -8,9 +8,9 @@ export const getOrganizationSettings = query({
     orgId: v.string(),
   },
   handler: async (ctx, args) => {
-    // Any authenticated, active user in the org can read the settings
-    const { orgId } = await requirePermission(ctx, "settings.manage");
-    void orgId; // orgId is pulled from identity; args.orgId is the explicit org to query
+    // Return null gracefully when there is no identity (demo raw ConvexProvider or loading state)
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return null;
 
     const settings = await ctx.db
       .query("organization_settings")

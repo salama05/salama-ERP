@@ -7,6 +7,7 @@ import { useCartStore } from "@/store/useCartStore";
 import { useI18n, formatCurrency } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -59,10 +60,13 @@ export function CheckoutModal({ isOpen, onClose, mode }: CheckoutModalProps) {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent 
         dir={dir} 
-        className="bg-bg-elevated border border-border text-text-primary rounded-xl max-w-md w-full animate-scale-in"
+        className={cn(
+          "border rounded-xl max-w-md w-full animate-scale-in p-6",
+          "bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-slate-900 dark:text-slate-100"
+        )}
       >
-        <DialogHeader className="border-b border-border/40 pb-3">
-          <DialogTitle className="text-heading-md font-bold text-text-primary">
+        <DialogHeader className="border-b border-gray-200 dark:border-slate-700 pb-3">
+          <DialogTitle className="text-lg font-bold text-slate-900 dark:text-slate-100">
             {t("checkout")}
           </DialogTitle>
         </DialogHeader>
@@ -70,15 +74,17 @@ export function CheckoutModal({ isOpen, onClose, mode }: CheckoutModalProps) {
         <div className="space-y-5 py-4">
           {/* Customer Selection */}
           <div className="space-y-1.5">
-            <label className="form-label font-semibold">{t("customer")}</label>
+            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 block">
+              {t("customer")}
+            </label>
             <select 
-              className="w-full bg-bg-surface border border-border rounded-xl p-3 text-text-primary focus:outline-none focus:ring-2 focus:ring-brand/35 transition-all"
+              className="w-full bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl p-3 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
               value={customerId}
               onChange={(e) => setCustomerId(e.target.value)}
             >
-              <option value="" className="bg-bg-elevated">{t("selectCustomer")}</option>
+              <option value="" className="bg-white dark:bg-slate-800">{t("selectCustomer")}</option>
               {customers.map(c => (
-                <option key={c._id} value={c._id} className="bg-bg-elevated text-text-primary">
+                <option key={c._id} value={c._id} className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100">
                   {c.name}
                 </option>
               ))}
@@ -87,8 +93,10 @@ export function CheckoutModal({ isOpen, onClose, mode }: CheckoutModalProps) {
 
           {/* Payment Method Selector */}
           <div className="space-y-2">
-            <label className="form-label font-semibold">{t("paymentMethod")}</label>
-            <div className={`flex ${isRTL ? "flex-row-reverse" : "flex-row"} gap-2.5`}>
+            <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 block">
+              {t("paymentMethod")}
+            </label>
+            <div className={cn("flex gap-2.5", isRTL && "flex-row-reverse")}>
               {(["cash", "credit", "check"] as const).map(method => {
                 const isActive = paymentMethod === method;
                 return (
@@ -97,11 +105,12 @@ export function CheckoutModal({ isOpen, onClose, mode }: CheckoutModalProps) {
                     type="button"
                     variant={isActive ? "default" : "outline"}
                     onClick={() => setPaymentMethod(method)}
-                    className={`flex-1 h-11 text-sm font-semibold rounded-xl transition-all ${
+                    className={cn(
+                      "flex-1 h-11 text-sm font-semibold rounded-xl transition-all",
                       isActive 
-                        ? "bg-brand text-white shadow-md border-brand" 
-                        : "border-border text-text-secondary hover:bg-bg-surface hover:text-text-primary"
-                    }`}
+                        ? "bg-indigo-600 text-white border-indigo-600 shadow-sm" 
+                        : "border-gray-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700"
+                    )}
                   >
                     {t(method)}
                   </Button>
@@ -117,18 +126,18 @@ export function CheckoutModal({ isOpen, onClose, mode }: CheckoutModalProps) {
               id="isOfficial" 
               checked={isOfficial} 
               onChange={(e) => setIsOfficial(e.target.checked)} 
-              className="h-5 w-5 rounded-md border-border text-brand focus:ring-brand bg-bg-surface transition-all cursor-pointer accent-brand"
+              className="h-5 w-5 rounded border-gray-300 dark:border-slate-600 text-indigo-600 focus:ring-indigo-500 bg-gray-50 dark:bg-slate-900 transition-all cursor-pointer"
             />
-            <label htmlFor="isOfficial" className="text-sm font-medium text-text-secondary select-none cursor-pointer">
+            <label htmlFor="isOfficial" className="text-sm font-medium text-slate-700 dark:text-slate-300 select-none cursor-pointer">
               {t("officialInvoice")}
             </label>
           </div>
 
           {/* Pricing Summary */}
-          <div className="pt-4 border-t border-border/40 mt-4">
+          <div className="pt-4 border-t border-gray-200 dark:border-slate-700 mt-4">
             <div className="flex justify-between items-center">
-              <span className="text-text-secondary text-body font-bold">{t("totalToPay")}</span>
-              <span className="text-price text-brand font-extrabold text-2xl">
+              <span className="text-slate-600 dark:text-slate-400 text-sm font-bold">{t("totalToPay")}</span>
+              <span className="text-indigo-600 dark:text-indigo-400 font-extrabold text-2xl">
                 {formatCurrency(total, language)}
               </span>
             </div>
@@ -136,11 +145,11 @@ export function CheckoutModal({ isOpen, onClose, mode }: CheckoutModalProps) {
         </div>
 
         {/* Modal Footer Actions */}
-        <div className={`flex ${isRTL ? "flex-row-reverse" : "flex-row"} justify-end gap-3 mt-2 border-t border-border/40 pt-4`}>
+        <div className={cn("flex justify-end gap-3 mt-2 border-t border-gray-200 dark:border-slate-700 pt-4", isRTL && "flex-row-reverse")}>
           <Button 
             variant="outline" 
             onClick={onClose} 
-            className="border-border text-text-secondary hover:bg-bg-surface hover:text-text-primary rounded-xl h-11 px-5"
+            className="border-gray-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700 rounded-xl h-11 px-5"
           >
             {t("cancel")}
           </Button>
@@ -148,7 +157,7 @@ export function CheckoutModal({ isOpen, onClose, mode }: CheckoutModalProps) {
           <Button 
             onClick={handleCheckout} 
             disabled={isSubmitting || !customerId}
-            className="bg-brand hover:bg-brand-light text-white rounded-xl h-11 px-6 font-bold shadow-glow hover:shadow-lg disabled:opacity-50 transition-all"
+            className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl h-11 px-6 font-bold disabled:opacity-50 transition-all"
           >
             {isSubmitting ? t("processing") : t("confirmPayment")}
           </Button>

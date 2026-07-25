@@ -24,7 +24,13 @@ export const localizedTextSchema = z.object({
 });
 
 export const merchantSettingsSchema = z.object({
-  store_name: z.string().min(1, { message: "Store name is required" }),
+  store_name: z
+    .string()
+    .min(1, { message: "Store name is required" })
+    .regex(
+      /^[\u0600-\u06FF\u0750-\u077F a-zA-Z0-9_@.,'()-]+$/,
+      { message: "اسم المتجر يجب أن يحتوي فقط على حروف عربية أو لاتينية أو أرقام" }
+    ),
   logo: z.string().optional(),
   phone: z.string().min(1, { message: "Phone number is required" }),
   email: z.string().email({ message: "Invalid email address" }).or(z.literal("")),

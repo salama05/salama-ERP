@@ -11,7 +11,7 @@ export default function RetailPOSPage() {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
   return (
-    <div className="flex flex-col md:flex-row h-[calc(100vh-80px)] -m-4 md:-m-8 bg-gray-50" dir={dir}>
+    <div className="flex flex-col md:flex-row h-[calc(100vh-80px)] -m-4 md:-m-8 bg-slate-50 dark:bg-slate-900" dir={dir}>
       {/* Product Grid Area */}
       <div className="flex-1 overflow-hidden">
         <ProductGrid mode="retail" />

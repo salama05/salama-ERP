@@ -5,10 +5,11 @@ import { useQuery, usePaginatedQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { usePermission } from "@/hooks/usePermission";
 import { useI18n } from "@/lib/i18n";
-import { formatNumber } from "@/lib/taxCalculator";
 import { cn } from "@/lib/utils";
 import { Activity, ShieldAlert, ChevronDown, ChevronUp, Filter, ExternalLink, User, Package, FileText, Settings, RefreshCw } from "lucide-react";
 import Link from "next/link";
+import { useIsDemoMode } from "@/components/providers/convex-client-provider";
+import { DemoExplorerBanner } from "@/components/demo/DemoExplorerBanner";
 
 function getLocaleForLanguage(lang: string): string {
   if (lang === "ar") return "ar-DZ";
@@ -16,9 +17,63 @@ function getLocaleForLanguage(lang: string): string {
   return "en-US";
 }
 
+const MOCK_DEMO_LOGS = [
+  {
+    _id: "demo-log-1",
+    timestamp: Date.now() - 1000 * 60 * 15,
+    userName: "زائر تجريبي (Demo)",
+    action: "create",
+    entityType: "Invoice",
+    entityId: "inv-demo-001",
+    entityLabel: "FACT-2026-001",
+    changes: [
+      { field: "amountPaid", oldValue: null, newValue: 15000 },
+      { field: "status", oldValue: null, newValue: "paid" },
+    ],
+  },
+  {
+    _id: "demo-log-2",
+    timestamp: Date.now() - 1000 * 60 * 60 * 2,
+    userName: "زائر تجريبي (Demo)",
+    action: "update",
+    entityType: "Product",
+    entityId: "prod-demo-002",
+    entityLabel: "حليب كوندي 1لتر",
+    changes: [
+      { field: "price", oldValue: 110, newValue: 120 },
+      { field: "stock", oldValue: 45, newValue: 100 },
+    ],
+  },
+  {
+    _id: "demo-log-3",
+    timestamp: Date.now() - 1000 * 60 * 60 * 5,
+    userName: "المدير العام (Owner)",
+    action: "role_change",
+    entityType: "User",
+    entityId: "user-demo-3",
+    entityLabel: "sales@salamaerp.com",
+    changes: [
+      { field: "role", oldValue: "STAFF", newValue: "sales_manager" },
+    ],
+  },
+  {
+    _id: "demo-log-4",
+    timestamp: Date.now() - 1000 * 60 * 60 * 24,
+    userName: "المدير العام (Owner)",
+    action: "update",
+    entityType: "MerchantSettings",
+    entityId: "settings-demo",
+    entityLabel: "إعدادات المتجر",
+    changes: [
+      { field: "store_name", oldValue: "متجر الديمو", newValue: "سلامة للاستيراد والتصدير" },
+    ],
+  },
+];
+
 export default function AuditLogPage() {
   const { t, dir, language } = useI18n();
   const isRTL = dir === "rtl";
+  const isDemoMode = useIsDemoMode();
 
   const { hasPermission: canManageUsers, isLoading: isManageLoading } = usePermission("users.manage");
   const { hasPermission: canViewReports, isLoading: isReportsLoading } = usePermission("reports.view");
@@ -30,14 +85,14 @@ export default function AuditLogPage() {
   const [endDate, setEndDate] = useState("");
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
-  const hasAccess = canManageUsers || canViewReports;
-  const isLoading = isManageLoading || isReportsLoading;
+  const hasAccess = canManageUsers || canViewReports || isDemoMode;
+  const isLoading = !isDemoMode && (isManageLoading || isReportsLoading);
 
-  const users = useQuery(api.users.listUsers, hasAccess ? { showInactive: true } : "skip");
+  const users = useQuery(api.users.listUsers, (hasAccess && !isDemoMode) ? { showInactive: true } : "skip");
 
-  const { results: logs, status, loadMore } = usePaginatedQuery(
+  const { results: serverLogs, status, loadMore } = usePaginatedQuery(
     api.audit.listAuditLogs,
-    hasAccess
+    (hasAccess && !isDemoMode)
       ? {
           entityType: entityTypeFilter || undefined,
           action: actionFilter || undefined,
@@ -49,6 +104,14 @@ export default function AuditLogPage() {
     { initialNumItems: 50 }
   );
 
+  const logs = isDemoMode
+    ? MOCK_DEMO_LOGS.filter(log => {
+        if (entityTypeFilter && log.entityType.toLowerCase() !== entityTypeFilter.toLowerCase()) return false;
+        if (actionFilter && log.action !== actionFilter) return false;
+        return true;
+      })
+    : (serverLogs || []);
+
   const getEntityIcon = (type: string) => {
     const t = type.toLowerCase();
     if (t === "invoice") return <FileText className="w-3.5 h-3.5" />;
@@ -58,6 +121,7 @@ export default function AuditLogPage() {
   };
 
   const getEntityLink = (type: string, id: string) => {
+    if (isDemoMode) return null;
     const t = type.toLowerCase();
     if (t === "invoice") return `/invoices/${id}`;
     if (t === "product") return `/products/${id}`;
@@ -93,6 +157,15 @@ export default function AuditLogPage() {
 
   return (
     <div className={cn("mx-auto max-w-5xl space-y-6", isRTL && "text-right")} dir={dir}>
+      {/* Demo Exploration Banner */}
+      <DemoExplorerBanner
+        featureName={{
+          ar: "سجل التدقيق",
+          fr: "Journal d'audit",
+          en: "Audit Log",
+        }}
+      />
+
       <div className="surface-panel p-6">
         <div className={cn("flex items-center gap-3", isRTL && "flex-row-reverse")}>
           <Activity className="h-7 w-7 text-[var(--color-brand-light)]" />
@@ -306,7 +379,7 @@ export default function AuditLogPage() {
           </table>
         </div>
 
-        {status === "CanLoadMore" && (
+        {!isDemoMode && status === "CanLoadMore" && (
           <div className="p-4 border-t border-[var(--color-border)] text-center">
             <button
               onClick={() => loadMore(50)}
@@ -318,7 +391,7 @@ export default function AuditLogPage() {
           </div>
         )}
 
-        {status === "LoadingMore" && (
+        {!isDemoMode && status === "LoadingMore" && (
           <div className="p-4 border-t border-[var(--color-border)] text-center text-sm text-[var(--color-text-secondary)] animate-pulse">
             {t("loading")}...
           </div>
